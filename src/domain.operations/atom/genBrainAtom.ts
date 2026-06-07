@@ -89,7 +89,9 @@ export const genBrainAtom = (input: {
       if (!openaiFromContext && !process.env.FIREWORKS_API_KEY)
         throw new BadRequestError(
           'FIREWORKS_API_KEY is required when openai client is not provided via context',
-          { hint: 'set FIREWORKS_API_KEY env var or pass openai client in context' },
+          {
+            hint: 'set FIREWORKS_API_KEY env var or pass openai client in context',
+          },
         );
       const openai =
         openaiFromContext ??

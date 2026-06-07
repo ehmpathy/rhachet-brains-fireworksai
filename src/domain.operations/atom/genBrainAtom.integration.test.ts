@@ -22,7 +22,10 @@ const toolOutputSchema = z.string();
 if (!process.env.FIREWORKS_API_KEY)
   throw new BadRequestError(
     'FIREWORKS_API_KEY is required for integration tests',
-    { hint: 'run: rhx keyrack unlock --owner ehmpath --env test', env: 'FIREWORKS_API_KEY' },
+    {
+      hint: 'run: rhx keyrack unlock --owner ehmpath --env test',
+      env: 'FIREWORKS_API_KEY',
+    },
   );
 
 describe('genBrainAtom.integration', () => {
