@@ -8,16 +8,16 @@ import { genBrainAtom } from '../../domain.operations/atom/genBrainAtom';
  */
 export const getBrainAtomsByFireworksAI = (): BrainAtom[] => {
   return [
-    genBrainAtom({ slug: 'fireworks/qwen3/coder-next' }),
-    genBrainAtom({ slug: 'fireworks/qwen3/coder-480b' }),
-    genBrainAtom({ slug: 'fireworks/qwen3/235b' }),
-    genBrainAtom({ slug: 'fireworks/deepseek/v3.1' }),
-    genBrainAtom({ slug: 'fireworks/deepseek/r1' }),
-    genBrainAtom({ slug: 'fireworks/kimi/k2' }),
+    genBrainAtom({ slug: 'fireworks/qwen3.6/plus' }),
+    genBrainAtom({ slug: 'fireworks/deepseek/v4-pro' }),
+    genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' }),
     genBrainAtom({ slug: 'fireworks/kimi/k2.5' }),
-    genBrainAtom({ slug: 'fireworks/llama4/maverick' }),
-    genBrainAtom({ slug: 'fireworks/llama3.3/70b' }),
-    genBrainAtom({ slug: 'fireworks/glm/4.7' }),
+    genBrainAtom({ slug: 'fireworks/kimi/k2.6' }),
+    genBrainAtom({ slug: 'fireworks/glm/5.1' }),
+    genBrainAtom({ slug: 'fireworks/minimax/2.5' }),
+    genBrainAtom({ slug: 'fireworks/minimax/2.7' }),
+    genBrainAtom({ slug: 'fireworks/gpt-oss/120b' }),
+    genBrainAtom({ slug: 'fireworks/gpt-oss/20b' }),
   ];
 };
 

@@ -1,0 +1,497 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworksAI when: [t0] called then: slugs match snapshot 1`] = `
+[
+  "fireworks/qwen3.6/plus",
+  "fireworks/deepseek/v4-pro",
+  "fireworks/deepseek/v4-flash",
+  "fireworks/kimi/k2.5",
+  "fireworks/kimi/k2.6",
+  "fireworks/glm/5.1",
+  "fireworks/minimax/2.5",
+  "fireworks/minimax/2.7",
+  "fireworks/gpt-oss/120b",
+  "fireworks/gpt-oss/20b",
+]
+`;
+
+exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworksAI when: [t0] called then: specs match snapshot 1`] = `
+[
+  {
+    "slug": "fireworks/qwen3.6/plus",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_500",
+          "output": "USD 0.000_003_000",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 120,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2025-07-01",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 131000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/deepseek/v4-pro",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_001_740",
+          "output": "USD 0.000_003_480",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 1.2,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 80,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-04-01",
+        "domain": "ALL",
+        "grades": {
+          "swe": 79.4,
+        },
+        "size": {
+          "context": {
+            "tokens": 1000000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/deepseek/v4-flash",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_140",
+          "output": "USD 0.000_000_280",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.4,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 150,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-04-01",
+        "domain": "ALL",
+        "grades": {
+          "swe": 78.6,
+        },
+        "size": {
+          "context": {
+            "tokens": 128000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/kimi/k2.5",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_600",
+          "output": "USD 0.000_003_000",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.8,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 100,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2025-07-01",
+        "domain": "ALL",
+        "grades": {
+          "swe": 76.8,
+        },
+        "size": {
+          "context": {
+            "tokens": 128000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/kimi/k2.6",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_950",
+          "output": "USD 0.000_004_000",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 1,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 90,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-04-01",
+        "domain": "ALL",
+        "grades": {
+          "swe": 80.2,
+        },
+        "size": {
+          "context": {
+            "tokens": 128000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/glm/5.1",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_001_400",
+          "output": "USD 0.000_004_400",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 1,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 80,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-04-01",
+        "domain": "ALL",
+        "grades": {
+          "swe": 77.8,
+        },
+        "size": {
+          "context": {
+            "tokens": 128000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/minimax/2.5",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_300",
+          "output": "USD 0.000_001_200",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 140,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-02-01",
+        "domain": "ALL",
+        "grades": {
+          "swe": 80.2,
+        },
+        "size": {
+          "context": {
+            "tokens": 128000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/minimax/2.7",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_300",
+          "output": "USD 0.000_001_200",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 140,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-04-01",
+        "domain": "ALL",
+        "grades": {
+          "swe": 80.5,
+        },
+        "size": {
+          "context": {
+            "tokens": 128000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/gpt-oss/120b",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_150",
+          "output": "USD 0.000_000_600",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 120,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-04-01",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 128000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/gpt-oss/20b",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.00",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_070",
+          "output": "USD 0.000_000_300",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.3,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 180,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-04-01",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 128000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+]
+`;
+
+exports[`rhachet-brains-fireworksai.unit given: [case2] genBrainAtom factory when: [t0] called with fireworks/deepseek/v4-flash slug then: spec matches snapshot 1`] = `
+BrainSpec {
+  "cost": {
+    "cash": {
+      "cache": {
+        "get": "USD 0.00",
+        "set": "USD 0.00",
+      },
+      "input": "USD 0.000_000_140",
+      "output": "USD 0.000_000_280",
+      "per": "token",
+    },
+    "time": {
+      "latency": {
+        "seconds": 0.4,
+      },
+      "speed": {
+        "per": {
+          "seconds": 1,
+        },
+        "tokens": 150,
+      },
+    },
+  },
+  "gain": {
+    "cutoff": "2026-04-01",
+    "domain": "ALL",
+    "grades": {
+      "swe": 78.6,
+    },
+    "size": {
+      "context": {
+        "tokens": 128000,
+      },
+    },
+    "skills": {
+      "tooluse": true,
+    },
+  },
+}
+`;
+
+exports[`rhachet-brains-fireworksai.unit given: [case2] genBrainAtom factory when: [t1] called with invalid slug then: throws BadRequestError with helpful message 1`] = `
+"BadRequestError: invalid fireworks brain atom slug: 'invalid/slug'. valid slugs: fireworks/qwen3.6/plus, fireworks/deepseek/v4-pro, fireworks/deepseek/v4-flash, fireworks/kimi/k2.5, fireworks/kimi/k2.6, fireworks/glm/5.1, fireworks/minimax/2.5, fireworks/minimax/2.7, fireworks/gpt-oss/120b, fireworks/gpt-oss/20b
+
+{
+  "slug": "invalid/slug",
+  "valid": [
+    "fireworks/qwen3.6/plus",
+    "fireworks/deepseek/v4-pro",
+    "fireworks/deepseek/v4-flash",
+    "fireworks/kimi/k2.5",
+    "fireworks/kimi/k2.6",
+    "fireworks/glm/5.1",
+    "fireworks/minimax/2.5",
+    "fireworks/minimax/2.7",
+    "fireworks/gpt-oss/120b",
+    "fireworks/gpt-oss/20b"
+  ]
+}"
+`;

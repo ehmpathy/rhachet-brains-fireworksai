@@ -36,14 +36,21 @@ export type { FireworksBrainAtomSlug } from './BrainAtom.config';
  * .note = fireworks ai api is openai-compatible with baseURL override
  *
  * .example
- *   genBrainAtom({ slug: 'fireworks/qwen3/coder-next' })
- *   genBrainAtom({ slug: 'fireworks/llama3.3/70b' }) // fast + cheap
- *   genBrainAtom({ slug: 'fireworks/kimi/k2.5' }) // best swe-bench
+ *   genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' }) // fast + cheap
+ *   genBrainAtom({ slug: 'fireworks/minimax/2.7' }) // best swe-bench (80.5%)
+ *   genBrainAtom({ slug: 'fireworks/kimi/k2.6' }) // high capability
  */
 export const genBrainAtom = (input: {
   slug: FireworksBrainAtomSlug;
 }): BrainAtom => {
+  // guard for invalid slug (runtime protection for js callers)
   const config = CONFIG_BY_ATOM_SLUG[input.slug];
+  const validSlugs = Object.keys(CONFIG_BY_ATOM_SLUG);
+  if (!config)
+    throw new BadRequestError(
+      `invalid fireworks brain atom slug: '${input.slug}'. valid slugs: ${validSlugs.join(', ')}`,
+      { slug: input.slug, valid: validSlugs },
+    );
 
   return new BrainAtom({
     repo: 'fireworks',
@@ -55,6 +62,7 @@ export const genBrainAtom = (input: {
      * .what = stateless inference with optional tool use
      * .why = provides direct model access for tasks
      *
+     * .note = outputs are non-deterministic (llm inference)
      * .note = supports continuation via `on.episode`
      * .note = supports tool use via `plugs.tools`
      */
@@ -77,8 +85,14 @@ export const genBrainAtom = (input: {
         : undefined;
 
       // get openai client from context or create new one with fireworks ai baseURL
+      const openaiFromContext = context?.openai as OpenAI | undefined;
+      if (!openaiFromContext && !process.env.FIREWORKS_API_KEY)
+        throw new BadRequestError(
+          'FIREWORKS_API_KEY is required when openai client is not provided via context',
+          { hint: 'set FIREWORKS_API_KEY env var or pass openai client in context' },
+        );
       const openai =
-        (context?.openai as OpenAI | undefined) ??
+        openaiFromContext ??
         new OpenAI({
           apiKey: process.env.FIREWORKS_API_KEY,
           baseURL: 'https://api.fireworks.ai/inference/v1',
@@ -153,12 +167,10 @@ export const genBrainAtom = (input: {
         }
       }
 
-      // include response_format only when we want structured output (not tool calls)
-      // vllm constraint: "model must not generate both text and tool calls in same generation"
-      // when response_format is present, model outputs json content, not tool_calls
-      // so we omit response_format on initial tool requests to enable tool call
-      const wantsToolCalls = hasTools && !isToolContinuation;
-      const wantStructuredOutput = !wantsToolCalls;
+      // include response_format only when we want structured output
+      // fireworks ai constraint: "cannot specify response format and function call at the same time"
+      // so we must omit response_format entirely when tools are present (initial OR continuation)
+      const wantStructuredOutput = !hasTools;
       const response = await openai.chat.completions.create({
         model: config.model,
         messages,
