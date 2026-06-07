@@ -2,7 +2,7 @@
   "name": "rhachet-brains-fireworksai",
   "author": "ehmpathy",
   "description": "rhachet brain.atom adapter for fireworks ai open-source models",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "repository": "ehmpathy/rhachet-brains-fireworksai",
   "homepage": "https://github.com/ehmpathy/rhachet-brains-fireworksai",
   "keywords": [
