@@ -14,26 +14,29 @@ export type BrainAtomConfig = {
 /**
  * .what = supported fireworks ai atom slugs
  * .why = enables type-safe slug specification with model variants
+ *
+ * .note = only includes models available on fireworks ai serverless
+ *         see: https://docs.fireworks.ai/serverless/rates
  */
 export type FireworksBrainAtomSlug =
-  | 'fireworks/qwen3/coder-next'
-  | 'fireworks/qwen3/coder-480b'
-  | 'fireworks/qwen3/235b'
-  | 'fireworks/deepseek/v3.1'
-  | 'fireworks/deepseek/r1'
-  | 'fireworks/kimi/k2'
+  | 'fireworks/qwen3.6/plus'
+  | 'fireworks/deepseek/v4-pro'
+  | 'fireworks/deepseek/v4-flash'
   | 'fireworks/kimi/k2.5'
-  | 'fireworks/llama4/maverick'
-  | 'fireworks/llama3.3/70b'
-  | 'fireworks/glm/4.7';
+  | 'fireworks/kimi/k2.6'
+  | 'fireworks/glm/5.1'
+  | 'fireworks/minimax/2.5'
+  | 'fireworks/minimax/2.7'
+  | 'fireworks/gpt-oss/120b'
+  | 'fireworks/gpt-oss/20b';
 
 /**
  * .what = model configuration by slug
  * .why = maps slugs to api model names, descriptions, and specs
  *
  * .sources:
- *   - rates: https://fireworks.ai/pricing
- *   - models: https://docs.fireworks.ai/docs/serverless-models
+ *   - rates: https://fireworks.ai/rates
+ *   - models: https://docs.fireworks.ai/serverless/rates
  *   - api docs: https://docs.fireworks.ai/reference/chat-completions-1
  */
 export const CONFIG_BY_ATOM_SLUG: Record<
@@ -41,87 +44,14 @@ export const CONFIG_BY_ATOM_SLUG: Record<
   BrainAtomConfig
 > = {
   /**
-   * qwen3-coder-next
+   * qwen 3.6 plus
    * .sources:
-   *   - rates: https://fireworks.ai/pricing ($0.50/1M input, $1.20/1M output)
-   *   - context: 262K
-   *   - swe-bench: 74.2% verified
-   *   - architecture: 80B total, 3B active (moe)
-   */
-  'fireworks/qwen3/coder-next': {
-    model: 'Qwen/Qwen3-Coder-Next-FP8',
-    description: 'qwen3-coder-next - best cost/performance for code (262K)',
-    spec: new BrainSpec({
-      cost: {
-        time: {
-          speed: { tokens: 150, per: { seconds: 1 } },
-          latency: { seconds: 0.5 },
-        },
-        cash: {
-          per: 'token',
-          cache: {
-            get: asIsoPrice('$0'), // no cache rate on fireworks ai
-            set: asIsoPrice('$0'),
-          },
-          input: dividePrice({ of: '$0.50', by: 1_000_000 }), // $0.50/1M tokens
-          output: dividePrice({ of: '$1.20', by: 1_000_000 }), // $1.20/1M tokens
-        },
-      },
-      gain: {
-        size: { context: { tokens: 262_000 } }, // 262K context
-        grades: { swe: 74.2 }, // 74.2% swe-bench verified
-        cutoff: '2025-06-01',
-        domain: 'SOFTWARE',
-        skills: { tooluse: true },
-      },
-    }),
-  },
-  /**
-   * qwen3-coder-480b
-   * .sources:
-   *   - rates: https://fireworks.ai/pricing ($2.00/1M input, $2.00/1M output)
-   *   - context: 262K
-   *   - swe-bench: 69.6% verified
-   *   - architecture: 480B total, 35B active (moe)
-   */
-  'fireworks/qwen3/coder-480b': {
-    model: 'Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8',
-    description: 'qwen3-coder-480b - large code model (262K)',
-    spec: new BrainSpec({
-      cost: {
-        time: {
-          speed: { tokens: 80, per: { seconds: 1 } },
-          latency: { seconds: 1 },
-        },
-        cash: {
-          per: 'token',
-          cache: {
-            get: asIsoPrice('$0'),
-            set: asIsoPrice('$0'),
-          },
-          input: dividePrice({ of: '$2.00', by: 1_000_000 }), // $2.00/1M tokens
-          output: dividePrice({ of: '$2.00', by: 1_000_000 }), // $2.00/1M tokens
-        },
-      },
-      gain: {
-        size: { context: { tokens: 262_000 } }, // 262K context
-        grades: { swe: 69.6 }, // 69.6% swe-bench verified
-        cutoff: '2025-06-01',
-        domain: 'SOFTWARE',
-        skills: { tooluse: true },
-      },
-    }),
-  },
-  /**
-   * qwen3-235b
-   * .sources:
-   *   - rates: https://fireworks.ai/pricing ($0.20/1M input, $0.60/1M output)
+   *   - rates: $0.50/1M input, $3.00/1M output
    *   - context: 131K
-   *   - architecture: 235B total, 22B active (moe)
    */
-  'fireworks/qwen3/235b': {
-    model: 'Qwen/Qwen3-235B-A22B-Instruct-2507-tput',
-    description: 'qwen3-235b - general purpose (131K)',
+  'fireworks/qwen3.6/plus': {
+    model: 'accounts/fireworks/models/qwen3p6-plus',
+    description: 'qwen3.6-plus - general purpose (131K)',
     spec: new BrainSpec({
       cost: {
         time: {
@@ -134,8 +64,8 @@ export const CONFIG_BY_ATOM_SLUG: Record<
             get: asIsoPrice('$0'),
             set: asIsoPrice('$0'),
           },
-          input: dividePrice({ of: '$0.20', by: 1_000_000 }), // $0.20/1M tokens
-          output: dividePrice({ of: '$0.60', by: 1_000_000 }), // $0.60/1M tokens
+          input: dividePrice({ of: '$0.50', by: 1_000_000 }), // $0.50/1M tokens
+          output: dividePrice({ of: '$3.00', by: 1_000_000 }), // $3.00/1M tokens
         },
       },
       gain: {
@@ -148,90 +78,20 @@ export const CONFIG_BY_ATOM_SLUG: Record<
     }),
   },
   /**
-   * deepseek-v3.1
+   * deepseek-v4-pro
    * .sources:
-   *   - rates: https://fireworks.ai/pricing ($1.25/1M input, $1.25/1M output)
-   *   - context: 128K
-   *   - architecture: 671B total, 37B active (moe)
+   *   - rates: $1.74/1M input, $3.48/1M output
+   *   - context: 1M
+   *   - swe-bench: 79.4% verified
    */
-  'fireworks/deepseek/v3.1': {
-    model: 'deepseek-ai/DeepSeek-V3.1',
-    description: 'deepseek-v3.1 - frontier open-source (128K)',
-    spec: new BrainSpec({
-      cost: {
-        time: {
-          speed: { tokens: 100, per: { seconds: 1 } },
-          latency: { seconds: 1 },
-        },
-        cash: {
-          per: 'token',
-          cache: {
-            get: asIsoPrice('$0'),
-            set: asIsoPrice('$0'),
-          },
-          input: dividePrice({ of: '$1.25', by: 1_000_000 }), // $1.25/1M tokens
-          output: dividePrice({ of: '$1.25', by: 1_000_000 }), // $1.25/1M tokens
-        },
-      },
-      gain: {
-        size: { context: { tokens: 128_000 } }, // 128K context
-        grades: {},
-        cutoff: '2025-03-01',
-        domain: 'ALL',
-        skills: { tooluse: true },
-      },
-    }),
-  },
-  /**
-   * deepseek-r1
-   * .sources:
-   *   - rates: https://fireworks.ai/pricing ($3.00/1M input, $7.00/1M output)
-   *   - context: 128K
-   *   - architecture: 671B total, 37B active (moe), chain-of-thought
-   */
-  'fireworks/deepseek/r1': {
-    model: 'deepseek-ai/DeepSeek-R1',
-    description: 'deepseek-r1 - chain-of-thought (128K)',
-    spec: new BrainSpec({
-      cost: {
-        time: {
-          speed: { tokens: 60, per: { seconds: 1 } },
-          latency: { seconds: 1.5 },
-        },
-        cash: {
-          per: 'token',
-          cache: {
-            get: asIsoPrice('$0'),
-            set: asIsoPrice('$0'),
-          },
-          input: dividePrice({ of: '$3.00', by: 1_000_000 }), // $3.00/1M tokens
-          output: dividePrice({ of: '$7.00', by: 1_000_000 }), // $7.00/1M tokens
-        },
-      },
-      gain: {
-        size: { context: { tokens: 128_000 } }, // 128K context
-        grades: {},
-        cutoff: '2025-03-01',
-        domain: 'ALL',
-        skills: { tooluse: true },
-      },
-    }),
-  },
-  /**
-   * kimi-k2
-   * .sources:
-   *   - rates: https://fireworks.ai/pricing ($1.00/1M input, $3.00/1M output)
-   *   - context: 128K
-   *   - architecture: 1T total (moe)
-   */
-  'fireworks/kimi/k2': {
-    model: 'moonshotai/Kimi-K2-Instruct',
-    description: 'kimi-k2 - large general purpose (128K)',
+  'fireworks/deepseek/v4-pro': {
+    model: 'accounts/fireworks/models/deepseek-v4-pro',
+    description: 'deepseek-v4-pro - frontier open-source (1M)',
     spec: new BrainSpec({
       cost: {
         time: {
           speed: { tokens: 80, per: { seconds: 1 } },
-          latency: { seconds: 1 },
+          latency: { seconds: 1.2 },
         },
         cash: {
           per: 'token',
@@ -239,99 +99,29 @@ export const CONFIG_BY_ATOM_SLUG: Record<
             get: asIsoPrice('$0'),
             set: asIsoPrice('$0'),
           },
-          input: dividePrice({ of: '$1.00', by: 1_000_000 }), // $1.00/1M tokens
-          output: dividePrice({ of: '$3.00', by: 1_000_000 }), // $3.00/1M tokens
-        },
-      },
-      gain: {
-        size: { context: { tokens: 128_000 } }, // 128K context
-        grades: {},
-        cutoff: '2025-06-01',
-        domain: 'ALL',
-        skills: { tooluse: true },
-      },
-    }),
-  },
-  /**
-   * kimi-k2.5
-   * .sources:
-   *   - rates: https://fireworks.ai/pricing ($0.50/1M input, $2.80/1M output)
-   *   - context: 128K
-   *   - swe-bench: 76.8% verified
-   */
-  'fireworks/kimi/k2.5': {
-    model: 'moonshotai/Kimi-K2.5',
-    description: 'kimi-k2.5 - best swe-bench on fireworks ai (128K)',
-    spec: new BrainSpec({
-      cost: {
-        time: {
-          speed: { tokens: 100, per: { seconds: 1 } },
-          latency: { seconds: 0.8 },
-        },
-        cash: {
-          per: 'token',
-          cache: {
-            get: asIsoPrice('$0'),
-            set: asIsoPrice('$0'),
-          },
-          input: dividePrice({ of: '$0.50', by: 1_000_000 }), // $0.50/1M tokens
-          output: dividePrice({ of: '$2.80', by: 1_000_000 }), // $2.80/1M tokens
-        },
-      },
-      gain: {
-        size: { context: { tokens: 128_000 } }, // 128K context
-        grades: { swe: 76.8 }, // 76.8% swe-bench verified
-        cutoff: '2025-07-01',
-        domain: 'ALL',
-        skills: { tooluse: true },
-      },
-    }),
-  },
-  /**
-   * llama-4-maverick
-   * .sources:
-   *   - rates: https://fireworks.ai/pricing ($0.27/1M input, $0.85/1M output)
-   *   - context: 1M
-   *   - architecture: 17B active, 128 experts (moe)
-   */
-  'fireworks/llama4/maverick': {
-    model: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
-    description: 'llama-4-maverick - large context (1M)',
-    spec: new BrainSpec({
-      cost: {
-        time: {
-          speed: { tokens: 120, per: { seconds: 1 } },
-          latency: { seconds: 0.5 },
-        },
-        cash: {
-          per: 'token',
-          cache: {
-            get: asIsoPrice('$0'),
-            set: asIsoPrice('$0'),
-          },
-          input: dividePrice({ of: '$0.27', by: 1_000_000 }), // $0.27/1M tokens
-          output: dividePrice({ of: '$0.85', by: 1_000_000 }), // $0.85/1M tokens
+          input: dividePrice({ of: '$1.74', by: 1_000_000 }), // $1.74/1M tokens
+          output: dividePrice({ of: '$3.48', by: 1_000_000 }), // $3.48/1M tokens
         },
       },
       gain: {
         size: { context: { tokens: 1_000_000 } }, // 1M context
-        grades: {},
-        cutoff: '2025-03-01',
+        grades: { swe: 79.4 }, // 79.4% swe-bench verified
+        cutoff: '2026-04-01',
         domain: 'ALL',
         skills: { tooluse: true },
       },
     }),
   },
   /**
-   * llama-3.3-70b
+   * deepseek-v4-flash
    * .sources:
-   *   - rates: https://fireworks.ai/pricing ($0.88/1M input, $0.88/1M output)
+   *   - rates: $0.14/1M input, $0.28/1M output
    *   - context: 128K
-   *   - architecture: 70B dense
+   *   - swe-bench: 78.6% verified
    */
-  'fireworks/llama3.3/70b': {
-    model: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
-    description: 'llama-3.3-70b - balanced dense model (128K)',
+  'fireworks/deepseek/v4-flash': {
+    model: 'accounts/fireworks/models/deepseek-v4-flash',
+    description: 'deepseek-v4-flash - cheapfast frontier (128K)',
     spec: new BrainSpec({
       cost: {
         time: {
@@ -344,29 +134,29 @@ export const CONFIG_BY_ATOM_SLUG: Record<
             get: asIsoPrice('$0'),
             set: asIsoPrice('$0'),
           },
-          input: dividePrice({ of: '$0.88', by: 1_000_000 }), // $0.88/1M tokens
-          output: dividePrice({ of: '$0.88', by: 1_000_000 }), // $0.88/1M tokens
+          input: dividePrice({ of: '$0.14', by: 1_000_000 }), // $0.14/1M tokens
+          output: dividePrice({ of: '$0.28', by: 1_000_000 }), // $0.28/1M tokens
         },
       },
       gain: {
         size: { context: { tokens: 128_000 } }, // 128K context
-        grades: {},
-        cutoff: '2024-12-01',
+        grades: { swe: 78.6 }, // 78.6% swe-bench verified
+        cutoff: '2026-04-01',
         domain: 'ALL',
         skills: { tooluse: true },
       },
     }),
   },
   /**
-   * glm-4.7
+   * kimi-k2.5
    * .sources:
-   *   - rates: https://fireworks.ai/pricing ($0.45/1M input, $2.00/1M output)
+   *   - rates: $0.60/1M input, $3.00/1M output
    *   - context: 128K
-   *   - swe-bench: 73.8% verified
+   *   - swe-bench: 76.8% verified
    */
-  'fireworks/glm/4.7': {
-    model: 'zai-org/GLM-4.7',
-    description: 'glm-4.7 - strong code + general (128K)',
+  'fireworks/kimi/k2.5': {
+    model: 'accounts/fireworks/models/kimi-k2p5',
+    description: 'kimi-k2.5 - strong swe-bench (128K)',
     spec: new BrainSpec({
       cost: {
         time: {
@@ -379,14 +169,222 @@ export const CONFIG_BY_ATOM_SLUG: Record<
             get: asIsoPrice('$0'),
             set: asIsoPrice('$0'),
           },
-          input: dividePrice({ of: '$0.45', by: 1_000_000 }), // $0.45/1M tokens
-          output: dividePrice({ of: '$2.00', by: 1_000_000 }), // $2.00/1M tokens
+          input: dividePrice({ of: '$0.60', by: 1_000_000 }), // $0.60/1M tokens
+          output: dividePrice({ of: '$3.00', by: 1_000_000 }), // $3.00/1M tokens
         },
       },
       gain: {
         size: { context: { tokens: 128_000 } }, // 128K context
-        grades: { swe: 73.8 }, // 73.8% swe-bench verified
-        cutoff: '2025-06-01',
+        grades: { swe: 76.8 }, // 76.8% swe-bench verified
+        cutoff: '2025-07-01',
+        domain: 'ALL',
+        skills: { tooluse: true },
+      },
+    }),
+  },
+  /**
+   * kimi-k2.6
+   * .sources:
+   *   - rates: $0.95/1M input, $4.00/1M output
+   *   - context: 128K
+   *   - swe-bench: 80.2% verified
+   */
+  'fireworks/kimi/k2.6': {
+    model: 'accounts/fireworks/models/kimi-k2p6',
+    description: 'kimi-k2.6 - frontier swe-bench (128K)',
+    spec: new BrainSpec({
+      cost: {
+        time: {
+          speed: { tokens: 90, per: { seconds: 1 } },
+          latency: { seconds: 1 },
+        },
+        cash: {
+          per: 'token',
+          cache: {
+            get: asIsoPrice('$0'),
+            set: asIsoPrice('$0'),
+          },
+          input: dividePrice({ of: '$0.95', by: 1_000_000 }), // $0.95/1M tokens
+          output: dividePrice({ of: '$4.00', by: 1_000_000 }), // $4.00/1M tokens
+        },
+      },
+      gain: {
+        size: { context: { tokens: 128_000 } }, // 128K context
+        grades: { swe: 80.2 }, // 80.2% swe-bench verified
+        cutoff: '2026-04-01',
+        domain: 'ALL',
+        skills: { tooluse: true },
+      },
+    }),
+  },
+  /**
+   * glm-5.1
+   * .sources:
+   *   - rates: $1.40/1M input, $4.40/1M output
+   *   - context: 128K
+   *   - swe-bench: 77.8% verified
+   */
+  'fireworks/glm/5.1': {
+    model: 'accounts/fireworks/models/glm-5p1',
+    description: 'glm-5.1 - frontier general (128K)',
+    spec: new BrainSpec({
+      cost: {
+        time: {
+          speed: { tokens: 80, per: { seconds: 1 } },
+          latency: { seconds: 1 },
+        },
+        cash: {
+          per: 'token',
+          cache: {
+            get: asIsoPrice('$0'),
+            set: asIsoPrice('$0'),
+          },
+          input: dividePrice({ of: '$1.40', by: 1_000_000 }), // $1.40/1M tokens
+          output: dividePrice({ of: '$4.40', by: 1_000_000 }), // $4.40/1M tokens
+        },
+      },
+      gain: {
+        size: { context: { tokens: 128_000 } }, // 128K context
+        grades: { swe: 77.8 }, // 77.8% swe-bench verified
+        cutoff: '2026-04-01',
+        domain: 'ALL',
+        skills: { tooluse: true },
+      },
+    }),
+  },
+  /**
+   * minimax-2.5
+   * .sources:
+   *   - rates: $0.30/1M input, $1.20/1M output
+   *   - context: 128K
+   *   - swe-bench: 80.2% verified
+   */
+  'fireworks/minimax/2.5': {
+    model: 'accounts/fireworks/models/minimax-m2p5',
+    description: 'minimax-2.5 - cheapfast high swe-bench (128K)',
+    spec: new BrainSpec({
+      cost: {
+        time: {
+          speed: { tokens: 140, per: { seconds: 1 } },
+          latency: { seconds: 0.5 },
+        },
+        cash: {
+          per: 'token',
+          cache: {
+            get: asIsoPrice('$0'),
+            set: asIsoPrice('$0'),
+          },
+          input: dividePrice({ of: '$0.30', by: 1_000_000 }), // $0.30/1M tokens
+          output: dividePrice({ of: '$1.20', by: 1_000_000 }), // $1.20/1M tokens
+        },
+      },
+      gain: {
+        size: { context: { tokens: 128_000 } }, // 128K context
+        grades: { swe: 80.2 }, // 80.2% swe-bench verified
+        cutoff: '2026-02-01',
+        domain: 'ALL',
+        skills: { tooluse: true },
+      },
+    }),
+  },
+  /**
+   * minimax-2.7
+   * .sources:
+   *   - rates: $0.30/1M input, $1.20/1M output
+   *   - context: 128K
+   *   - swe-bench: 80.5% verified
+   */
+  'fireworks/minimax/2.7': {
+    model: 'accounts/fireworks/models/minimax-m2p7',
+    description: 'minimax-2.7 - cheapfast highest swe-bench (128K)',
+    spec: new BrainSpec({
+      cost: {
+        time: {
+          speed: { tokens: 140, per: { seconds: 1 } },
+          latency: { seconds: 0.5 },
+        },
+        cash: {
+          per: 'token',
+          cache: {
+            get: asIsoPrice('$0'),
+            set: asIsoPrice('$0'),
+          },
+          input: dividePrice({ of: '$0.30', by: 1_000_000 }), // $0.30/1M tokens
+          output: dividePrice({ of: '$1.20', by: 1_000_000 }), // $1.20/1M tokens
+        },
+      },
+      gain: {
+        size: { context: { tokens: 128_000 } }, // 128K context
+        grades: { swe: 80.5 }, // 80.5% swe-bench verified
+        cutoff: '2026-04-01',
+        domain: 'ALL',
+        skills: { tooluse: true },
+      },
+    }),
+  },
+  /**
+   * gpt-oss-120b
+   * .sources:
+   *   - rates: $0.15/1M input, $0.60/1M output
+   *   - context: 128K
+   */
+  'fireworks/gpt-oss/120b': {
+    model: 'accounts/fireworks/models/gpt-oss-120b',
+    description: 'gpt-oss-120b - cheapfast general (128K)',
+    spec: new BrainSpec({
+      cost: {
+        time: {
+          speed: { tokens: 120, per: { seconds: 1 } },
+          latency: { seconds: 0.5 },
+        },
+        cash: {
+          per: 'token',
+          cache: {
+            get: asIsoPrice('$0'),
+            set: asIsoPrice('$0'),
+          },
+          input: dividePrice({ of: '$0.15', by: 1_000_000 }), // $0.15/1M tokens
+          output: dividePrice({ of: '$0.60', by: 1_000_000 }), // $0.60/1M tokens
+        },
+      },
+      gain: {
+        size: { context: { tokens: 128_000 } }, // 128K context
+        grades: {},
+        cutoff: '2026-04-01',
+        domain: 'ALL',
+        skills: { tooluse: true },
+      },
+    }),
+  },
+  /**
+   * gpt-oss-20b
+   * .sources:
+   *   - rates: $0.07/1M input, $0.30/1M output
+   *   - context: 128K
+   */
+  'fireworks/gpt-oss/20b': {
+    model: 'accounts/fireworks/models/gpt-oss-20b',
+    description: 'gpt-oss-20b - cheapest general (128K)',
+    spec: new BrainSpec({
+      cost: {
+        time: {
+          speed: { tokens: 180, per: { seconds: 1 } },
+          latency: { seconds: 0.3 },
+        },
+        cash: {
+          per: 'token',
+          cache: {
+            get: asIsoPrice('$0'),
+            set: asIsoPrice('$0'),
+          },
+          input: dividePrice({ of: '$0.07', by: 1_000_000 }), // $0.07/1M tokens
+          output: dividePrice({ of: '$0.30', by: 1_000_000 }), // $0.30/1M tokens
+        },
+      },
+      gain: {
+        size: { context: { tokens: 128_000 } }, // 128K context
+        grades: {},
+        cutoff: '2026-04-01',
         domain: 'ALL',
         skills: { tooluse: true },
       },

@@ -1,0 +1,6 @@
+{"tool":"Read","path":"/home/vlad/git/ehmpathy/_worktrees/rhachet-brains-fireworksai.vlad.contract/.behavior/v2026_06_06.contract/1.vision.stone","verdict":"blocked","reason":"*.stone"}
+{"tool":"Read","path":"/home/vlad/git/ehmpathy/_worktrees/rhachet-brains-fireworksai.vlad.contract/.behavior/v2026_06_06.contract/1.vision.guard","verdict":"blocked","reason":"*.guard"}
+{"tool":"Read","path":"/home/vlad/git/ehmpathy/_worktrees/rhachet-brains-fireworksai.vlad.contract/.behavior/v2026_06_06.contract/1.vision.stone","verdict":"blocked","reason":"*.stone"}
+{"tool":"Read","path":"/home/vlad/git/ehmpathy/_worktrees/rhachet-brains-fireworksai.vlad.contract/.behavior/v2026_06_06.contract/5.1.execution.from_vision.guard","verdict":"blocked","reason":"*.guard"}
+{"tool":"Read","path":"/home/vlad/git/ehmpathy/_worktrees/rhachet-brains-fireworksai.vlad.contract/.behavior/v2026_06_06.contract/1.vision.stone","verdict":"blocked","reason":"*.stone"}
+{"tool":"Bash","command":"cat .behavior/v2026_06_06.contract/.route/.guardrail.events.jsonl | tail -1 | jq -r '.response.revie","verdict":"blocked","reason":".route/**"}

@@ -15,7 +15,7 @@ import { genBrainAtom } from 'rhachet-brains-fireworksai';
 import { z } from 'zod';
 
 // create a brain atom for direct model inference
-const brainAtom = genBrainAtom({ slug: 'fireworks/qwen3/coder-next' });
+const brainAtom = genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' });
 
 // simple string output
 const { output: explanation } = await brainAtom.ask({
@@ -36,36 +36,46 @@ const { output: { summary, issues } } = await brainAtom.ask({
 
 ### atoms (via genBrainAtom)
 
-stateless inference without tool use.
+stateless inference with tool use support. all models below are verified on fireworks ai serverless.
 
-| slug | model id | context | swe-bench | input | output |
+#### frontier tier
+
+highest capability models for complex tasks.
+
+| slug | model | context | swe-bench | input | output |
 | --- | --- | --- | --- | --- | --- |
-| `fireworks/qwen3/coder-next` | Qwen/Qwen3-Coder-Next-FP8 | 262K | 74.2% | $0.50/1M | $1.20/1M |
-| `fireworks/qwen3/coder-480b` | Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 | 262K | 69.6% | $2.00/1M | $2.00/1M |
-| `fireworks/qwen3/235b` | Qwen/Qwen3-235B-A22B-Instruct-2507-tput | 131K | — | $0.20/1M | $0.60/1M |
-| `fireworks/deepseek/v3.1` | deepseek-ai/DeepSeek-V3.1 | 128K | — | $1.25/1M | $1.25/1M |
-| `fireworks/deepseek/r1` | deepseek-ai/DeepSeek-R1 | 128K | — | $3.00/1M | $7.00/1M |
-| `fireworks/kimi/k2` | moonshotai/Kimi-K2-Instruct | 128K | — | $1.00/1M | $3.00/1M |
-| `fireworks/kimi/k2.5` | moonshotai/Kimi-K2.5 | 128K | 76.8% | $0.50/1M | $2.80/1M |
-| `fireworks/llama4/maverick` | meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8 | 1M | — | $0.27/1M | $0.85/1M |
-| `fireworks/llama3.3/70b` | meta-llama/Llama-3.3-70B-Instruct-Turbo | 128K | — | $0.88/1M | $0.88/1M |
-| `fireworks/glm/4.7` | zai-org/GLM-4.7 | 128K | 73.8% | $0.45/1M | $2.00/1M |
+| `fireworks/kimi/k2.6` | Kimi-K2.6 | 128K | 80.2% | $0.95/1M | $4.00/1M |
+| `fireworks/minimax/2.7` | MiniMax-M2.7 | 128K | 80.5% | $0.30/1M | $1.20/1M |
+| `fireworks/minimax/2.5` | MiniMax-M2.5 | 128K | 80.2% | $0.30/1M | $1.20/1M |
+| `fireworks/deepseek/v4-pro` | DeepSeek-V4-Pro | 1M | 79.4% | $1.74/1M | $3.48/1M |
+| `fireworks/deepseek/v4-flash` | DeepSeek-V4-Flash | 128K | 78.6% | $0.14/1M | $0.28/1M |
+| `fireworks/glm/5.1` | GLM-5.1 | 128K | 77.8% | $1.40/1M | $4.40/1M |
+| `fireworks/kimi/k2.5` | Kimi-K2.5 | 128K | 76.8% | $0.60/1M | $3.00/1M |
 
-## why fireworks ai
+#### cheapfast tier
 
-fireworks ai rates include managed fine-tune access ($6-10/1M tokens) and high-throughput serverless infrastructure. some model authors offer cheaper direct apis for inference-only:
+models optimized for high-volume inference at low cost.
 
-| model | fireworks ai (in/out) | author direct (in/out) | author api |
-| --- | --- | --- | --- |
-| deepseek v3 | $1.25/$1.25 | **$0.28/$0.42** (3-4x cheaper) | [api.deepseek.com](https://api-docs.deepseek.com/quick_start/pricing) |
-| deepseek r1 | $3.00/$7.00 | **$0.28/$0.42** (10-17x cheaper) | [api.deepseek.com](https://api-docs.deepseek.com/quick_start/pricing) |
-| kimi k2 | $1.00/$3.00 | **$0.60/$2.50** (~35% cheaper) | [platform.moonshot.ai](https://platform.moonshot.ai/docs/pricing/chat) |
-| kimi k2.5 | $0.50/$2.80 | $0.60/$3.00 (at parity) | [platform.moonshot.ai](https://platform.moonshot.ai/docs/pricing/chat) |
-| qwen3 coder-next | **$0.50/$1.20** | $1.00/$5.00 (fireworks ai cheaper) | [alibabacloud.com](https://www.alibabacloud.com/help/en/model-studio/model-pricing) |
-| glm-4.7 | **$0.45/$2.00** | $0.60/$2.20 (fireworks ai cheaper) | [z.ai](https://docs.z.ai/guides/overview/pricing) |
-| llama 4 maverick | $0.27/$0.85 | ~$0.27/$0.85 (at parity) | [llama.com](https://www.llama.com/products/llama-api/) |
+| slug | model | context | swe-bench | input | output |
+| --- | --- | --- | --- | --- | --- |
+| `fireworks/gpt-oss/20b` | GPT-OSS-20B | 128K | — | $0.07/1M | $0.30/1M |
+| `fireworks/deepseek/v4-flash` | DeepSeek-V4-Flash | 128K | 78.6% | $0.14/1M | $0.28/1M |
+| `fireworks/gpt-oss/120b` | GPT-OSS-120B | 128K | — | $0.15/1M | $0.60/1M |
+| `fireworks/minimax/2.5` | MiniMax-M2.5 | 128K | 80.2% | $0.30/1M | $1.20/1M |
+| `fireworks/minimax/2.7` | MiniMax-M2.7 | 128K | 80.5% | $0.30/1M | $1.20/1M |
+| `fireworks/qwen3.6/plus` | Qwen-3.6-Plus | 131K | — | $0.50/1M | $3.00/1M |
 
-**tldr:** deepseek's direct api is dramatically cheaper. kimi k2 is modestly cheaper via moonshot. the rest are at parity or more expensive than fireworks ai. fireworks ai's premium buys fine-tune access and unified multi-model infrastructure.
+> swe-bench verified scores from [llm-stats.com](https://llm-stats.com/benchmarks/swe-bench-verified) and fireworks ai model cards.
+
+### tool use support
+
+all 10 models support tool use via the openai-compatible function call api. tested capabilities:
+
+| capability | status |
+| --- | --- |
+| tool invocation | all models |
+| tool continuation | all models |
+| structured output | all models (without tools) |
 
 ## environment
 
@@ -77,9 +87,4 @@ get your api key at https://api.fireworks.ai/inference/settings/api-keys
 
 - [fireworks ai api docs](https://docs.fireworks.ai/reference/chat-completions-1)
 - [fireworks ai models](https://docs.fireworks.ai/docs/serverless-models)
-- [fireworks ai rates](https://fireworks.ai/pricing)
-- [deepseek rates](https://api-docs.deepseek.com/quick_start/pricing)
-- [moonshot rates](https://platform.moonshot.ai/docs/pricing/chat)
-- [alibaba model studio rates](https://www.alibabacloud.com/help/en/model-studio/model-pricing)
-- [zhipu z.ai rates](https://docs.z.ai/guides/overview/pricing)
-- [meta llama api](https://www.llama.com/products/llama-api/)
+- [fireworks ai rates](https://docs.fireworks.ai/serverless/rates)
