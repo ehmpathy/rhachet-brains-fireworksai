@@ -12,6 +12,20 @@ export type BrainAtomConfig = {
 };
 
 /**
+ * .what = supplies for fireworks brain supplier
+ * .why = enables credential injection via keyrack shorthand or explicit getter
+ *
+ * .patterns:
+ *   - keyrack shorthand: { keyrack: { owner: 'ehmpath', env: 'prod' } }
+ *   - explicit getter: () => Promise<{ FIREWORKS_API_KEY: string }>
+ */
+export type BrainSuppliesFireworks = {
+  creds:
+    | { keyrack: { owner: string; env: string } }
+    | (() => Promise<{ FIREWORKS_API_KEY: string }>);
+};
+
+/**
  * .what = supported fireworks ai atom slugs
  * .why = enables type-safe slug specification with model variants
  *
@@ -83,6 +97,8 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - rates: $1.74/1M input, $3.48/1M output
    *   - context: 1M
    *   - swe-bench: 79.4% verified
+   *   - mmlu-pro: 87.5%
+   *   - gpqa-diamond: 90.1%
    */
   'fireworks/deepseek/v4-pro': {
     model: 'accounts/fireworks/models/deepseek-v4-pro',
@@ -105,7 +121,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
       },
       gain: {
         size: { context: { tokens: 1_000_000 } }, // 1M context
-        grades: { swe: 79.4 }, // 79.4% swe-bench verified
+        grades: { swe: 79.4, mmlu: 87.5, gpqa: 90.1 },
         cutoff: '2026-04-01',
         domain: 'ALL',
         skills: { tooluse: true },
@@ -116,12 +132,13 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    * deepseek-v4-flash
    * .sources:
    *   - rates: $0.14/1M input, $0.28/1M output
-   *   - context: 128K
+   *   - context: 1M
    *   - swe-bench: 78.6% verified
+   *   - gpqa-diamond: ~88%
    */
   'fireworks/deepseek/v4-flash': {
     model: 'accounts/fireworks/models/deepseek-v4-flash',
-    description: 'deepseek-v4-flash - cheapfast frontier (128K)',
+    description: 'deepseek-v4-flash - cheapfast frontier (1M)',
     spec: new BrainSpec({
       cost: {
         time: {
@@ -139,8 +156,8 @@ export const CONFIG_BY_ATOM_SLUG: Record<
         },
       },
       gain: {
-        size: { context: { tokens: 128_000 } }, // 128K context
-        grades: { swe: 78.6 }, // 78.6% swe-bench verified
+        size: { context: { tokens: 1_000_000 } }, // 1M context
+        grades: { swe: 78.6, gpqa: 88 },
         cutoff: '2026-04-01',
         domain: 'ALL',
         skills: { tooluse: true },
