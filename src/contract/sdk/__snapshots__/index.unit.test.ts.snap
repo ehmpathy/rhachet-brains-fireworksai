@@ -86,6 +86,8 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
         "cutoff": "2026-04-01",
         "domain": "ALL",
         "grades": {
+          "gpqa": 90.1,
+          "mmlu": 87.5,
           "swe": 79.4,
         },
         "size": {
@@ -128,11 +130,12 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
         "cutoff": "2026-04-01",
         "domain": "ALL",
         "grades": {
+          "gpqa": 88,
           "swe": 78.6,
         },
         "size": {
           "context": {
-            "tokens": 128000,
+            "tokens": 1000000,
           },
         },
         "skills": {
@@ -462,11 +465,12 @@ BrainSpec {
     "cutoff": "2026-04-01",
     "domain": "ALL",
     "grades": {
+      "gpqa": 88,
       "swe": 78.6,
     },
     "size": {
       "context": {
-        "tokens": 128000,
+        "tokens": 1000000,
       },
     },
     "skills": {

@@ -1,5 +1,6 @@
 import { BadRequestError } from 'helpful-errors';
 import OpenAI from 'openai';
+import type { ContextBrainSupplier } from 'rhachet';
 import {
   BrainAtom,
   type BrainEpisode,
@@ -14,20 +15,33 @@ import {
 } from 'rhachet/brains';
 import type { Artifact } from 'rhachet-artifact';
 import type { GitFile } from 'rhachet-artifact-git';
-import type { Empty } from 'type-fns';
 import { z } from 'zod';
 
 import { castContentToOutputSchema } from '../../infra/cast/castContentToOutputSchema';
 import { castFromFireworksToolCall } from '../../infra/cast/castFromFireworksToolCall';
 import { castIntoFireworksToolDef } from '../../infra/cast/castIntoFireworksToolDef';
 import { castIntoFireworksToolMessages } from '../../infra/cast/castIntoFireworksToolMessages';
+import { getSdkFireworksCreds } from '../creds/getSdkFireworksCreds';
 import {
+  type BrainSuppliesFireworks,
   CONFIG_BY_ATOM_SLUG,
   type FireworksBrainAtomSlug,
 } from './BrainAtom.config';
 
 // re-export for consumers
-export type { FireworksBrainAtomSlug } from './BrainAtom.config';
+export type {
+  BrainSuppliesFireworks,
+  FireworksBrainAtomSlug,
+} from './BrainAtom.config';
+
+/**
+ * .what = typed context for fireworks brain supplier
+ * .why = enables type-safe credential injection via genContextBrainSupplier('fireworks', ...)
+ */
+export type ContextBrainSupplierFireworks = ContextBrainSupplier<
+  'fireworks',
+  BrainSuppliesFireworks
+>;
 
 /**
  * .what = factory to generate fireworks ai brain atom instances
@@ -42,7 +56,7 @@ export type { FireworksBrainAtomSlug } from './BrainAtom.config';
  */
 export const genBrainAtom = (input: {
   slug: FireworksBrainAtomSlug;
-}): BrainAtom => {
+}): BrainAtom<ContextBrainSupplierFireworks> => {
   // guard for invalid slug (runtime protection for js callers)
   const config = CONFIG_BY_ATOM_SLUG[input.slug];
   const validSlugs = Object.keys(CONFIG_BY_ATOM_SLUG);
@@ -74,7 +88,7 @@ export const genBrainAtom = (input: {
         prompt: string | BrainPlugToolExecution[];
         schema: { output: z.Schema<TOutput> };
       },
-      context?: Empty,
+      context?: ContextBrainSupplierFireworks,
     ): Promise<BrainOutput<TOutput, 'atom', TPlugs>> => {
       // track start time for elapsed duration
       const startedAt = Date.now();
@@ -84,21 +98,12 @@ export const genBrainAtom = (input: {
         ? await castBriefsToPrompt({ briefs: askInput.role.briefs })
         : undefined;
 
-      // get openai client from context or create new one with fireworks ai baseURL
-      const openaiFromContext = context?.openai as OpenAI | undefined;
-      if (!openaiFromContext && !process.env.FIREWORKS_API_KEY)
-        throw new BadRequestError(
-          'FIREWORKS_API_KEY is required when openai client is not provided via context',
-          {
-            hint: 'set FIREWORKS_API_KEY env var or pass openai client in context',
-          },
-        );
-      const openai =
-        openaiFromContext ??
-        new OpenAI({
-          apiKey: process.env.FIREWORKS_API_KEY,
-          baseURL: 'https://api.fireworks.ai/inference/v1',
-        });
+      // get credentials via context (keyrack shorthand, getter, or env fallback)
+      const creds = await getSdkFireworksCreds({}, context);
+      const openai = new OpenAI({
+        apiKey: creds.FIREWORKS_API_KEY,
+        baseURL: 'https://api.fireworks.ai/inference/v1',
+      });
 
       // build messages array with prior exchanges for continuation
       const messages: OpenAI.ChatCompletionMessageParam[] = [];
