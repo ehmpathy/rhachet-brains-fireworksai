@@ -21,5 +21,11 @@ export const getBrainAtomsByFireworksAI = (): BrainAtom[] => {
   ];
 };
 
+// re-export types for consumer use
+export type {
+  BrainSuppliesFireworks,
+  FireworksBrainAtomSlug,
+  FireworksCreds,
+} from '../../domain.operations/atom/BrainAtom.config';
 // re-export factory for direct access
 export { genBrainAtom } from '../../domain.operations/atom/genBrainAtom';
