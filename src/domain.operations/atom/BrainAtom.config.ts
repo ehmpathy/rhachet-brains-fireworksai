@@ -1,5 +1,5 @@
 import { asIsoPrice, dividePrice } from 'iso-price';
-import { BrainSpec } from 'rhachet';
+import { BrainSpec, type BrainSuppliesCreds } from 'rhachet/brains';
 
 /**
  * .what = atom config type
@@ -12,6 +12,12 @@ export type BrainAtomConfig = {
 };
 
 /**
+ * .what = credential keys required by fireworks ai
+ * .why = enables type-safe credential lookup via rhachet's BrainSuppliesCreds
+ */
+export type FireworksCreds = { FIREWORKS_API_KEY: string };
+
+/**
  * .what = supplies for fireworks brain supplier
  * .why = enables credential injection via keyrack shorthand or explicit getter
  *
@@ -20,9 +26,7 @@ export type BrainAtomConfig = {
  *   - explicit getter: () => Promise<{ FIREWORKS_API_KEY: string }>
  */
 export type BrainSuppliesFireworks = {
-  creds:
-    | { keyrack: { owner: string; env: string } }
-    | (() => Promise<{ FIREWORKS_API_KEY: string }>);
+  creds: BrainSuppliesCreds<FireworksCreds>;
 };
 
 /**

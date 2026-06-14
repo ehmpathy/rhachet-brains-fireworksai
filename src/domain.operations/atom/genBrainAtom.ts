@@ -12,6 +12,7 @@ import {
   calcBrainOutputCost,
   castBriefsToPrompt,
   genBrainContinuables,
+  getSdkCredsFromBrainSupplies,
 } from 'rhachet/brains';
 import type { Artifact } from 'rhachet-artifact';
 import type { GitFile } from 'rhachet-artifact-git';
@@ -21,7 +22,6 @@ import { castContentToOutputSchema } from '../../infra/cast/castContentToOutputS
 import { castFromFireworksToolCall } from '../../infra/cast/castFromFireworksToolCall';
 import { castIntoFireworksToolDef } from '../../infra/cast/castIntoFireworksToolDef';
 import { castIntoFireworksToolMessages } from '../../infra/cast/castIntoFireworksToolMessages';
-import { getSdkFireworksCreds } from '../creds/getSdkFireworksCreds';
 import {
   type BrainSuppliesFireworks,
   CONFIG_BY_ATOM_SLUG,
@@ -98,8 +98,16 @@ export const genBrainAtom = (input: {
         ? await castBriefsToPrompt({ briefs: askInput.role.briefs })
         : undefined;
 
-      // get credentials via context (keyrack shorthand, getter, or env fallback)
-      const creds = await getSdkFireworksCreds({}, context);
+      // get credentials via context (keyrack shorthand or getter)
+      const supplier = context?.['brain.supplier.fireworks'];
+      if (!supplier?.creds)
+        throw new BadRequestError(
+          'FIREWORKS_API_KEY required — provide via context',
+        );
+      const creds = await getSdkCredsFromBrainSupplies({
+        creds: supplier.creds,
+        keys: ['FIREWORKS_API_KEY'],
+      });
       const openai = new OpenAI({
         apiKey: creds.FIREWORKS_API_KEY,
         baseURL: 'https://api.fireworks.ai/inference/v1',
