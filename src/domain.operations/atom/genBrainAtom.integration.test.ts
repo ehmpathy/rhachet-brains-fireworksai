@@ -1,4 +1,4 @@
-import { BadRequestError, UnexpectedCodePathError } from 'helpful-errors';
+import { UnexpectedCodePathError } from 'helpful-errors';
 import path from 'path';
 import { genContextBrainSupplier } from 'rhachet';
 import type {
@@ -10,7 +10,10 @@ import { getError, given, then, useThen, when } from 'test-fns';
 import { z } from 'zod';
 
 import { TEST_ASSETS_DIR } from '../../.test/assets/dir';
-import type { BrainSuppliesFireworks, FireworksBrainAtomSlug } from './BrainAtom.config';
+import type {
+  BrainSuppliesFireworks,
+  FireworksBrainAtomSlug,
+} from './BrainAtom.config';
 import { genBrainAtom } from './genBrainAtom';
 
 const BRIEFS_DIR = path.join(TEST_ASSETS_DIR, '/example.briefs');
