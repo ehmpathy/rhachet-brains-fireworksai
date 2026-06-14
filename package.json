@@ -67,7 +67,6 @@
     "openai": "5.8.2",
     "rhachet-artifact": "1.0.1",
     "rhachet-artifact-git": "1.1.5",
-    "type-fns": "1.21.0",
     "zod": "4.3.4"
   },
   "peerDependencies": {
