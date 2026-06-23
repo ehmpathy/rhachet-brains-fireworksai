@@ -7,9 +7,9 @@ import { getBrainAtomsByFireworksAI } from './index';
 describe('rhachet-brains-fireworksai.unit', () => {
   given('[case1] getBrainAtomsByFireworksAI', () => {
     when('[t0] called', () => {
-      then('returns array with 10 atoms', () => {
+      then('returns array with 11 atoms', () => {
         const atoms = getBrainAtomsByFireworksAI();
-        expect(atoms).toHaveLength(10);
+        expect(atoms).toHaveLength(11);
       });
 
       then('returns BrainAtom instances', () => {
@@ -28,7 +28,7 @@ describe('rhachet-brains-fireworksai.unit', () => {
       then('slugs match snapshot', () => {
         const atoms = getBrainAtomsByFireworksAI();
         const slugs = atoms.map((a: BrainAtom) => a.slug);
-        expect(slugs).toHaveLength(10);
+        expect(slugs).toHaveLength(11);
         expect(slugs[0]).toContain('fireworks/');
         expect(slugs).toMatchSnapshot();
       });
@@ -39,7 +39,7 @@ describe('rhachet-brains-fireworksai.unit', () => {
           slug: a.slug,
           spec: a.spec,
         }));
-        expect(specs).toHaveLength(10);
+        expect(specs).toHaveLength(11);
         expect(specs[0]).toHaveProperty('spec');
         expect(specs[0]).toHaveProperty('slug');
         expect(specs).toMatchSnapshot();

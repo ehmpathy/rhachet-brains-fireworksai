@@ -8,14 +8,21 @@ import { genBrainAtom } from '../../domain.operations/atom/genBrainAtom';
  */
 export const getBrainAtomsByFireworksAI = (): BrainAtom[] => {
   return [
-    genBrainAtom({ slug: 'fireworks/qwen3.6/plus' }),
+    // deepseek
     genBrainAtom({ slug: 'fireworks/deepseek/v4-pro' }),
     genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' }),
-    genBrainAtom({ slug: 'fireworks/kimi/k2.5' }),
+    // moonshot/kimi
+    genBrainAtom({ slug: 'fireworks/kimi/k2.7-code' }),
     genBrainAtom({ slug: 'fireworks/kimi/k2.6' }),
+    // alibaba/qwen
+    genBrainAtom({ slug: 'fireworks/qwen/3.7-plus' }),
+    // z.ai/glm
+    genBrainAtom({ slug: 'fireworks/glm/5.2' }),
     genBrainAtom({ slug: 'fireworks/glm/5.1' }),
-    genBrainAtom({ slug: 'fireworks/minimax/2.5' }),
+    // minimax
+    genBrainAtom({ slug: 'fireworks/minimax/m3' }),
     genBrainAtom({ slug: 'fireworks/minimax/2.7' }),
+    // gpt-oss
     genBrainAtom({ slug: 'fireworks/gpt-oss/120b' }),
     genBrainAtom({ slug: 'fireworks/gpt-oss/20b' }),
   ];
