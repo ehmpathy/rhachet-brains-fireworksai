@@ -36,8 +36,8 @@ describe('genBrainAtom.integration', () => {
   // use deepseek-v4-flash for fast integration tests
   const brainAtom = genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' });
 
-  // use minimax/2.5 for tool use tests (reliable tool call + slug support)
-  const brainAtomWithTools = genBrainAtom({ slug: 'fireworks/minimax/2.5' });
+  // use minimax/m3 for tool use tests (reliable tool call + slug support)
+  const brainAtomWithTools = genBrainAtom({ slug: 'fireworks/minimax/m3' });
 
   given('[case1] genBrainAtom({ slug: "fireworks/deepseek/v4-flash" })', () => {
     when('[t0] atom is created', () => {
@@ -175,14 +175,16 @@ describe('genBrainAtom.integration', () => {
 
   given('[case4] all models leverage briefs', () => {
     // all serverless-available models
-    // note: k2.5 excluded from tests due to slow Fireworks infrastructure (times out)
+    // note: llama4 excluded due to 404 errors (possibly geo-restricted or deployment issue)
     const allSlugs: FireworksBrainAtomSlug[] = [
-      'fireworks/qwen3.6/plus',
       'fireworks/deepseek/v4-pro',
       'fireworks/deepseek/v4-flash',
+      'fireworks/kimi/k2.7-code',
       'fireworks/kimi/k2.6',
+      'fireworks/qwen/3.7-plus',
+      'fireworks/glm/5.2',
       'fireworks/glm/5.1',
-      'fireworks/minimax/2.5',
+      'fireworks/minimax/m3',
       'fireworks/minimax/2.7',
       'fireworks/gpt-oss/120b',
       'fireworks/gpt-oss/20b',
@@ -439,14 +441,17 @@ describe('genBrainAtom.integration', () => {
   // this is a Fireworks AI limitation; xAI handles this differently
 
   given('[case9] tool use model compatibility', () => {
-    // note: k2.5 excluded from tests due to slow Fireworks infrastructure (times out)
+    // all models that support tool use
+    // note: llama4 excluded due to 404 errors (possibly geo-restricted or deployment issue)
     const toolCompatSlugs: FireworksBrainAtomSlug[] = [
-      'fireworks/qwen3.6/plus',
       'fireworks/deepseek/v4-pro',
       'fireworks/deepseek/v4-flash',
+      'fireworks/kimi/k2.7-code',
       'fireworks/kimi/k2.6',
+      'fireworks/qwen/3.7-plus',
+      'fireworks/glm/5.2',
       'fireworks/glm/5.1',
-      'fireworks/minimax/2.5',
+      'fireworks/minimax/m3',
       'fireworks/minimax/2.7',
       'fireworks/gpt-oss/120b',
       'fireworks/gpt-oss/20b',
@@ -518,7 +523,7 @@ describe('genBrainAtom.integration', () => {
 
     // test tool use on models that support it
     const modelsToTest: FireworksBrainAtomSlug[] = [
-      'fireworks/minimax/2.5',
+      'fireworks/minimax/m3',
       'fireworks/minimax/2.7',
     ];
 
