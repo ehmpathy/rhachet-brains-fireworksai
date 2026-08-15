@@ -18,7 +18,6 @@ export const getBrainAtomsByFireworksAI = (): BrainAtom[] => {
     genBrainAtom({ slug: 'fireworks/qwen/3.7-plus' }),
     // z.ai/glm
     genBrainAtom({ slug: 'fireworks/glm/5.2' }),
-    genBrainAtom({ slug: 'fireworks/glm/5.1' }),
     // minimax
     genBrainAtom({ slug: 'fireworks/minimax/m3' }),
     genBrainAtom({ slug: 'fireworks/minimax/2.7' }),
