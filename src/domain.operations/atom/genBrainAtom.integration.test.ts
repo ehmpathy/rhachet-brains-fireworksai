@@ -197,15 +197,21 @@ describe('genBrainAtom.integration', () => {
 
     for (const slug of allSlugs) {
       when(`[${slug}] ask is called with briefs`, () => {
+        // .note = prompt is neutral ('acknowledge this message'), not 'say hello' — a
+        //         literal 'say hello' competed with the brief's directive, and several
+        //         open-weight models (observed: minimax/m3, glm/5.2, qwen/3.7-plus)
+        //         intermittently followed the surface prompt and dropped the brief.
+        //         attempts raised 3->5 as a secondary margin; llm inference stays
+        //         probabilistic even with the prompt no longer in tension with the brief.
         then.repeatably({
-          attempts: 3,
+          attempts: 5,
           criteria: 'SOME',
         })('response contains ZEBRA42', async () => {
           const atom = genBrainAtom({ slug });
           const result = await atom.ask(
             {
               role: { briefs },
-              prompt: 'say hello',
+              prompt: 'acknowledge this message',
               schema: { output: outputSchema },
             },
             context,
