@@ -8,7 +8,6 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
   "fireworks/kimi/k2.6",
   "fireworks/qwen/3.7-plus",
   "fireworks/glm/5.2",
-  "fireworks/glm/5.1",
   "fireworks/minimax/m3",
   "fireworks/minimax/2.7",
   "fireworks/gpt-oss/120b",
@@ -271,48 +270,6 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
     },
   },
   {
-    "slug": "fireworks/glm/5.1",
-    "spec": BrainSpec {
-      "cost": {
-        "cash": {
-          "cache": {
-            "get": "USD 0.00",
-            "set": "USD 0.00",
-          },
-          "input": "USD 0.000_001_400",
-          "output": "USD 0.000_004_400",
-          "per": "token",
-        },
-        "time": {
-          "latency": {
-            "seconds": 1,
-          },
-          "speed": {
-            "per": {
-              "seconds": 1,
-            },
-            "tokens": 80,
-          },
-        },
-      },
-      "gain": {
-        "cutoff": "2026-04-01",
-        "domain": "ALL",
-        "grades": {
-          "swe": 77.8,
-        },
-        "size": {
-          "context": {
-            "tokens": 128000,
-          },
-        },
-        "skills": {
-          "tooluse": true,
-        },
-      },
-    },
-  },
-  {
     "slug": "fireworks/minimax/m3",
     "spec": BrainSpec {
       "cost": {
@@ -479,6 +436,21 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
 ]
 `;
 
+exports[`rhachet-brains-fireworksai.unit given: [case1b] CONFIG_BY_ATOM_SLUG model ids when: [t0] read from config then: model id by slug matches snapshot 1`] = `
+{
+  "fireworks/deepseek/v4-flash": "accounts/fireworks/models/deepseek-v4-flash-0731",
+  "fireworks/deepseek/v4-pro": "accounts/fireworks/models/deepseek-v4-pro",
+  "fireworks/glm/5.2": "accounts/fireworks/models/glm-5p2",
+  "fireworks/gpt-oss/120b": "accounts/fireworks/models/gpt-oss-120b",
+  "fireworks/gpt-oss/20b": "accounts/fireworks/models/gpt-oss-20b",
+  "fireworks/kimi/k2.6": "accounts/fireworks/models/kimi-k2p6",
+  "fireworks/kimi/k2.7-code": "accounts/fireworks/models/kimi-k2p7-code",
+  "fireworks/minimax/2.7": "accounts/fireworks/models/minimax-m2p7",
+  "fireworks/minimax/m3": "accounts/fireworks/models/minimax-m3",
+  "fireworks/qwen/3.7-plus": "accounts/fireworks/models/qwen3p7-plus",
+}
+`;
+
 exports[`rhachet-brains-fireworksai.unit given: [case2] genBrainAtom factory when: [t0] called with fireworks/deepseek/v4-flash slug then: spec matches snapshot 1`] = `
 BrainSpec {
   "cost": {
@@ -523,7 +495,7 @@ BrainSpec {
 `;
 
 exports[`rhachet-brains-fireworksai.unit given: [case2] genBrainAtom factory when: [t1] called with invalid slug then: throws BadRequestError with helpful message 1`] = `
-"BadRequestError: invalid fireworks brain atom slug: 'invalid/slug'. valid slugs: fireworks/deepseek/v4-pro, fireworks/deepseek/v4-flash, fireworks/kimi/k2.7-code, fireworks/kimi/k2.6, fireworks/qwen/3.7-plus, fireworks/glm/5.2, fireworks/glm/5.1, fireworks/minimax/m3, fireworks/minimax/2.7, fireworks/gpt-oss/120b, fireworks/gpt-oss/20b
+"BadRequestError: invalid fireworks brain atom slug: 'invalid/slug'. valid slugs: fireworks/deepseek/v4-pro, fireworks/deepseek/v4-flash, fireworks/kimi/k2.7-code, fireworks/kimi/k2.6, fireworks/qwen/3.7-plus, fireworks/glm/5.2, fireworks/minimax/m3, fireworks/minimax/2.7, fireworks/gpt-oss/120b, fireworks/gpt-oss/20b
 
 {
   "slug": "invalid/slug",
@@ -534,7 +506,6 @@ exports[`rhachet-brains-fireworksai.unit given: [case2] genBrainAtom factory whe
     "fireworks/kimi/k2.6",
     "fireworks/qwen/3.7-plus",
     "fireworks/glm/5.2",
-    "fireworks/glm/5.1",
     "fireworks/minimax/m3",
     "fireworks/minimax/2.7",
     "fireworks/gpt-oss/120b",

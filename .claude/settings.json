@@ -129,6 +129,12 @@
             "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-sedreplace-special-chars",
             "timeout": 5,
             "author": "repo=ehmpathy/role=mechanic"
+          },
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhx route.foreground.guard --mode hook",
+            "timeout": 5,
+            "author": "repo=bhrain/role=driver"
           }
         ]
       },
@@ -194,6 +200,17 @@
           {
             "type": "command",
             "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-tmp-writes",
+            "timeout": 5,
+            "author": "repo=ehmpathy/role=mechanic"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./node_modules/.bin/rhachet run --repo ehmpathy --role mechanic --init claude.hooks/pretooluse.forbid-shouted-readme",
             "timeout": 5,
             "author": "repo=ehmpathy/role=mechanic"
           }
@@ -305,13 +322,18 @@
       "Bash(echo $MESSAGE | npx rhachet run --skill git.commit.set -m @stdin --mode apply --push)",
       "Bash(echo $MESSAGE | npx rhachet run --skill git.commit.set -m @stdin --unstaged ignore)",
       "Bash(echo $MESSAGE | npx rhachet run --skill git.commit.set -m @stdin --unstaged include)",
+      "Bash(echo $MESSAGE | npx rhachet run --skill git.commit.set -m @stdin --mode apply --push --auth as-human)",
+      "Bash(echo $MESSAGE | npx rhachet run --skill git.commit.set -m @stdin --mode apply --push --auth as-ehmpath)",
       "Bash(rhx git.commit.set:*)",
       "Bash(echo $MESSAGE | rhx git.commit.set -m @stdin)",
       "Bash(echo $MESSAGE | rhx git.commit.set -m @stdin --mode apply)",
       "Bash(echo $MESSAGE | rhx git.commit.set -m @stdin --mode apply --push)",
       "Bash(echo $MESSAGE | rhx git.commit.set -m @stdin --unstaged ignore)",
       "Bash(echo $MESSAGE | rhx git.commit.set -m @stdin --unstaged include)",
+      "Bash(echo $MESSAGE | rhx git.commit.set -m @stdin --mode apply --push --auth as-human)",
+      "Bash(echo $MESSAGE | rhx git.commit.set -m @stdin --mode apply --push --auth as-ehmpath)",
       "Bash(npx rhachet run --skill git.commit.push:*)",
+      "Bash(rhx git.commit.push:*)",
       "Bash(npx rhachet run --skill git.stage.add:*)",
       "Bash(npx rhachet run --skill git.stage.add src/file1.ts src/file2.ts)",
       "Bash(npx rhachet run --skill git.stage.add --glob 'src/**/*.ts')",
@@ -405,8 +427,7 @@
       "Bash(gh search prs:*)",
       "Bash(gh search commits:*)",
       "Bash(gh api -X GET:*)",
-      "Bash(gh api --method GET:*)",
-      "Bash(source .agent/repo=.this/role=any/skills/use.apikeys.sh)"
+      "Bash(gh api --method GET:*)"
     ],
     "deny": [
       "Bash(bash:*)",
@@ -497,5 +518,10 @@
       "Bash(pnpm add:*)",
       "Bash(pnpm install:*)"
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node -e \"import('rhachet-roles-bhrain/cli/route').then(m => m.routeStatusLine())\"",
+    "padding": 0
   }
 }

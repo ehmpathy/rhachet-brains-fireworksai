@@ -18,7 +18,11 @@ if (!process.env.FIREWORKS_API_KEY)
 const realApiKey = process.env.FIREWORKS_API_KEY;
 
 describe('genBrainAtom.credentials.integration', () => {
-  jest.setTimeout(60000); // increased for multiple api calls
+  // .note = matches genBrainAtom.integration.test.ts. cases 2 and 4 each make
+  //         2 sequential real calls; observed CI latency for a single
+  //         fireworks/deepseek/v4-flash call ranges 1-28s, so 60s left no
+  //         headroom for two in sequence (measured: 58.4s pass, 60.0s fail).
+  jest.setTimeout(90000);
 
   given('[case1] context with creds getter', () => {
     when('[t0] ask is called with context supplier', () => {

@@ -46,8 +46,11 @@ export type FireworksBrainAtomSlug =
   // alibaba/qwen
   | 'fireworks/qwen/3.7-plus'
   // z.ai/glm
+  // .note = glm/5.1 was removed: pay-per-token for GLM-5.1 was deprecated
+  //         effective 2026-08-07, so its id 404s on serverless. it remains
+  //         available on provisioned throughput only, which this package does
+  //         not target. deprecation is not fixable by a re-pin.
   | 'fireworks/glm/5.2'
-  | 'fireworks/glm/5.1'
   // minimax
   | 'fireworks/minimax/m3'
   | 'fireworks/minimax/2.7'
@@ -109,14 +112,22 @@ export const CONFIG_BY_ATOM_SLUG: Record<
   },
   /**
    * deepseek-v4-flash — cheapfast
+   *
+   * .note = the `-0731` suffix is required. verified 2026-08-14: the
+   *         un-suffixed `accounts/fireworks/models/deepseek-v4-flash` returns
+   *         404 NOT_FOUND, while the `-0731` id serves. do not "tidy" the
+   *         suffix away. a catalog page may still list the un-suffixed id as
+   *         available; the api is authoritative over the catalog.
+   *
    * .sources:
+   *   - model: https://fireworks.ai/models/deepseek-ai/deepseek-v4-flash-0731
    *   - rates: $0.14/1M input, $0.28/1M output
    *   - context: 1M
    *   - swe-bench verified: 79.0%
    *   - gpqa-diamond: ~88%
    */
   'fireworks/deepseek/v4-flash': {
-    model: 'accounts/fireworks/models/deepseek-v4-flash',
+    model: 'accounts/fireworks/models/deepseek-v4-flash-0731',
     description: 'deepseek-v4-flash - cheapfast (1M, swe 79.0%)',
     spec: new BrainSpec({
       cost: {
@@ -286,39 +297,6 @@ export const CONFIG_BY_ATOM_SLUG: Record<
       },
     }),
   },
-  /**
-   * glm-5.1
-   * .sources:
-   *   - rates: $1.40/1M input, $4.40/1M output
-   *   - context: 128K
-   *   - swe-bench verified: 77.8%
-   */
-  'fireworks/glm/5.1': {
-    model: 'accounts/fireworks/models/glm-5p1',
-    description: 'glm-5.1 - (128K, swe 77.8%)',
-    spec: new BrainSpec({
-      cost: {
-        time: {
-          speed: { tokens: 80, per: { seconds: 1 } },
-          latency: { seconds: 1 },
-        },
-        cash: {
-          per: 'token',
-          cache: { get: asIsoPrice('$0'), set: asIsoPrice('$0') },
-          input: dividePrice({ of: '$1.40', by: 1_000_000 }),
-          output: dividePrice({ of: '$4.40', by: 1_000_000 }),
-        },
-      },
-      gain: {
-        size: { context: { tokens: 128_000 } },
-        grades: { swe: 77.8 },
-        cutoff: '2026-04-01',
-        domain: 'ALL',
-        skills: { tooluse: true },
-      },
-    }),
-  },
-
   // ═══════════════════════════════════════════════════════════════════════════
   // minimax
   // ═══════════════════════════════════════════════════════════════════════════
