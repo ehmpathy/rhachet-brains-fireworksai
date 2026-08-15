@@ -109,14 +109,22 @@ export const CONFIG_BY_ATOM_SLUG: Record<
   },
   /**
    * deepseek-v4-flash — cheapfast
+   *
+   * .note = the `-0731` suffix is required. verified 2026-08-14: the
+   *         un-suffixed `accounts/fireworks/models/deepseek-v4-flash` returns
+   *         404 NOT_FOUND, while the `-0731` id serves. do not "tidy" the
+   *         suffix away. a catalog page may still list the un-suffixed id as
+   *         available; the api is authoritative over the catalog.
+   *
    * .sources:
+   *   - model: https://fireworks.ai/models/deepseek-ai/deepseek-v4-flash-0731
    *   - rates: $0.14/1M input, $0.28/1M output
    *   - context: 1M
    *   - swe-bench verified: 79.0%
    *   - gpqa-diamond: ~88%
    */
   'fireworks/deepseek/v4-flash': {
-    model: 'accounts/fireworks/models/deepseek-v4-flash',
+    model: 'accounts/fireworks/models/deepseek-v4-flash-0731',
     description: 'deepseek-v4-flash - cheapfast (1M, swe 79.0%)',
     spec: new BrainSpec({
       cost: {
