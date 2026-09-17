@@ -18,6 +18,7 @@ import type { Artifact } from 'rhachet-artifact';
 import type { GitFile } from 'rhachet-artifact-git';
 import { z } from 'zod';
 
+import { asBrainSizeTokens } from '../../infra/cast/asBrainSizeTokens';
 import { castContentToOutputSchema } from '../../infra/cast/castContentToOutputSchema';
 import { castFromFireworksToolCall } from '../../infra/cast/castFromFireworksToolCall';
 import { castIntoFireworksToolDef } from '../../infra/cast/castIntoFireworksToolDef';
@@ -27,6 +28,7 @@ import {
   CONFIG_BY_ATOM_SLUG,
   type FireworksBrainAtomSlug,
 } from './BrainAtom.config';
+import { getOnePromptCacheAffinityKey } from './getOnePromptCacheAffinityKey';
 
 // re-export for consumers
 export type {
@@ -186,23 +188,42 @@ export const genBrainAtom = (input: {
       // fireworks ai constraint: "cannot specify response format and function call at the same time"
       // so we must omit response_format entirely when tools are present (initial OR continuation)
       const wantStructuredOutput = !hasTools;
-      const response = await openai.chat.completions.create({
+
+      // pin which replica serves this prefix, so the prompt cache can hit
+      // .note = messages are composed static-first: the system prompt (stable
+      //         per role) leads, prior exchanges follow, and the variable
+      //         prompt lands last. that order is what makes the prefix worth a
+      //         pin — a variable value ahead of the briefs would void every
+      //         token behind it.
+      const affinityKey = getOnePromptCacheAffinityKey({
         model: config.model,
-        messages,
-        ...(hasTools ? { tools, tool_choice: 'auto' as const } : {}),
-        ...(wantStructuredOutput
-          ? {
-              response_format: {
-                type: 'json_schema',
-                json_schema: {
-                  name: 'response',
-                  strict: true,
-                  schema: jsonSchema,
-                },
-              },
-            }
-          : {}),
+        systemPrompt,
       });
+
+      const response = await openai.chat.completions.create(
+        {
+          model: config.model,
+          messages,
+          ...(hasTools ? { tools, tool_choice: 'auto' as const } : {}),
+          ...(wantStructuredOutput
+            ? {
+                response_format: {
+                  type: 'json_schema',
+                  json_schema: {
+                    name: 'response',
+                    strict: true,
+                    schema: jsonSchema,
+                  },
+                },
+              }
+            : {}),
+        },
+        {
+          headers: affinityKey
+            ? { 'x-session-affinity': affinityKey }
+            : undefined,
+        },
+      );
 
       // extract response message
       const message = response.choices[0]?.message;
@@ -212,15 +233,8 @@ export const genBrainAtom = (input: {
       // calculate elapsed time
       const elapsedMs = Date.now() - startedAt;
 
-      // extract token usage from response
-      const tokensInput = response.usage?.prompt_tokens ?? 0;
-      const tokensOutput = response.usage?.completion_tokens ?? 0;
-      const tokensCached =
-        (
-          response.usage as {
-            prompt_tokens_details?: { cached_tokens?: number };
-          }
-        )?.prompt_tokens_details?.cached_tokens ?? 0;
+      // read the token counts, disjoint, so each token is billed exactly once
+      const sizeTokens = asBrainSizeTokens({ usage: response.usage });
 
       // calculate character counts
       const promptLength = promptIsToolExecutions
@@ -231,11 +245,7 @@ export const genBrainAtom = (input: {
 
       // define size for metrics and cost calculation
       const size = {
-        tokens: {
-          input: tokensInput,
-          output: tokensOutput,
-          cache: { get: tokensCached, set: 0 },
-        },
+        tokens: sizeTokens,
         chars: {
           input: charsInput,
           output: charsOutput,

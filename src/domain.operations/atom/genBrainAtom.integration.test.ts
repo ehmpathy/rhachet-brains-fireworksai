@@ -174,19 +174,20 @@ describe('genBrainAtom.integration', () => {
   });
 
   given('[case4] all models leverage briefs', () => {
-    // all serverless-available models
-    // note: llama4 excluded due to 404 errors (possibly geo-restricted or deployment issue)
+    // every slug in the catalog; each verified by a live call 2026-09-16
     const allSlugs: FireworksBrainAtomSlug[] = [
       'fireworks/deepseek/v4-pro',
+      'fireworks/deepseek/v4.1-flash',
       'fireworks/deepseek/v4-flash',
+      'fireworks/kimi/k3',
       'fireworks/kimi/k2.7-code',
       'fireworks/kimi/k2.6',
-      'fireworks/qwen/3.7-plus',
+      'fireworks/glm/5.3',
+      'fireworks/glm/5.3-flash',
       'fireworks/glm/5.2',
       'fireworks/minimax/m3',
-      'fireworks/minimax/2.7',
       'fireworks/gpt-oss/120b',
-      'fireworks/gpt-oss/20b',
+      'fireworks/nemotron/3.5-lightning',
     ];
 
     const briefs = [
@@ -446,19 +447,20 @@ describe('genBrainAtom.integration', () => {
   // this is a Fireworks AI limitation; xAI handles this differently
 
   given('[case9] tool use model compatibility', () => {
-    // all models that support tool use
-    // note: llama4 excluded due to 404 errors (possibly geo-restricted or deployment issue)
+    // every model in the catalog declares tooluse; each is exercised here
     const toolCompatSlugs: FireworksBrainAtomSlug[] = [
       'fireworks/deepseek/v4-pro',
+      'fireworks/deepseek/v4.1-flash',
       'fireworks/deepseek/v4-flash',
+      'fireworks/kimi/k3',
       'fireworks/kimi/k2.7-code',
       'fireworks/kimi/k2.6',
-      'fireworks/qwen/3.7-plus',
+      'fireworks/glm/5.3',
+      'fireworks/glm/5.3-flash',
       'fireworks/glm/5.2',
       'fireworks/minimax/m3',
-      'fireworks/minimax/2.7',
       'fireworks/gpt-oss/120b',
-      'fireworks/gpt-oss/20b',
+      'fireworks/nemotron/3.5-lightning',
     ];
 
     for (const slug of toolCompatSlugs) {
@@ -528,7 +530,7 @@ describe('genBrainAtom.integration', () => {
     // test tool use on models that support it
     const modelsToTest: FireworksBrainAtomSlug[] = [
       'fireworks/minimax/m3',
-      'fireworks/minimax/2.7',
+      'fireworks/glm/5.3-flash',
     ];
 
     for (const slug of modelsToTest) {

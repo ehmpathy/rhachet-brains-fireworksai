@@ -8,13 +8,26 @@ import { getBrainAtomsByFireworksAI } from './index';
 describe('rhachet-brains-fireworksai.unit', () => {
   given('[case1] getBrainAtomsByFireworksAI', () => {
     when('[t0] called', () => {
-      then('returns array with 11 atoms', () => {
+      // .why = the count is DERIVED from the config, never hardcoded. a literal
+      //        drifts the moment the catalog changes — this suite carried a
+      //        `toHaveLength(10)` under a name that read "11 atoms", so the two
+      //        had already disagreed. the invariant worth an assertion is that
+      //        the sdk exports every configured slug, no more and no fewer.
+      then('exports exactly the configured slugs', () => {
         const atoms = getBrainAtomsByFireworksAI();
-        expect(atoms).toHaveLength(10);
+        const slugs = atoms.map((a: BrainAtom) => a.slug);
+        expect([...slugs].sort()).toEqual(
+          Object.keys(CONFIG_BY_ATOM_SLUG).sort(),
+        );
       });
 
       then('returns BrainAtom instances', () => {
         const atoms = getBrainAtomsByFireworksAI();
+
+        // .why = the loop below verifies zero elements if the array is empty,
+        //        so the case would pass while it proved naught
+        expect(atoms.length).toBeGreaterThan(0);
+
         for (const atom of atoms) {
           expect(atom).toBeInstanceOf(BrainAtom);
         }
@@ -29,7 +42,6 @@ describe('rhachet-brains-fireworksai.unit', () => {
       then('slugs match snapshot', () => {
         const atoms = getBrainAtomsByFireworksAI();
         const slugs = atoms.map((a: BrainAtom) => a.slug);
-        expect(slugs).toHaveLength(10);
         expect(slugs[0]).toContain('fireworks/');
         expect(slugs).toMatchSnapshot();
       });
@@ -40,7 +52,6 @@ describe('rhachet-brains-fireworksai.unit', () => {
           slug: a.slug,
           spec: a.spec,
         }));
-        expect(specs).toHaveLength(10);
         expect(specs[0]).toHaveProperty('spec');
         expect(specs[0]).toHaveProperty('slug');
         expect(specs).toMatchSnapshot();
@@ -61,10 +72,25 @@ describe('rhachet-brains-fireworksai.unit', () => {
             config.model,
           ]),
         );
+
+        // .why = the snapshot alone carries no teeth here: `test:unit` always
+        //        passes --updateSnapshot, so a wrong id would be recorded as
+        //        the new truth rather than fail. this assertion is what makes
+        //        the case bite — it fails if a slug is ever dropped from the
+        //        map, which a re-recorded snapshot would otherwise absorb.
+        expect(Object.keys(modelBySlug).sort()).toEqual(
+          Object.keys(CONFIG_BY_ATOM_SLUG).sort(),
+        );
+        expect(Object.keys(modelBySlug).length).toBeGreaterThan(0);
+
         expect(modelBySlug).toMatchSnapshot();
       });
 
       then('every model id is account-qualified', () => {
+        // .why = the loop below verifies zero ids if the config is empty, so
+        //        the case would pass while it proved naught
+        expect(Object.keys(CONFIG_BY_ATOM_SLUG).length).toBeGreaterThan(0);
+
         for (const config of Object.values(CONFIG_BY_ATOM_SLUG)) {
           expect(config.model).toMatch(/^accounts\/[\w-]+\/models\/[\w.-]+$/);
         }
