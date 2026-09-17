@@ -4,6 +4,7 @@
 *.tsbuildinfo
 .artifact
 .env
+.review
 .serverless
 .temp
 .terraform

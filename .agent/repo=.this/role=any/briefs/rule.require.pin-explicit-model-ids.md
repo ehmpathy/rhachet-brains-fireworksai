@@ -33,21 +33,29 @@ unannounced behavior change into a stable, legible fact.
 reviewer in every repo without an explicit `--brain` failed at once — observed as 9/9
 level-1 reviewers that malfunctioned identically.
 
-a catalog listing of the fireworks account on 2026-08-14 showed the hazard is **live and
-latent** elsewhere in this config: both `deepseek-v4-pro` and `deepseek-v4-pro-0813` are
-served. we take the alias. that is the same shape that broke v4-flash, one provider action
-away from the same outcome.
+a catalog read of the fireworks account on 2026-08-14 showed the hazard elsewhere in this
+config: both `deepseek-v4-pro` and `deepseek-v4-pro-0813` appear. we took the alias.
+
+🔴 **this paragraph once read "both are served… live and latent." that was wrong, and the
+error is instructive.** a live probe on 2026-09-16 found `deepseek-v4-pro` answered **404**
+on inference while it sat in the catalog. the hazard was never latent — it had already
+fired, and the catalog read could not see it. a catalog says what fireworks *knows*, never
+what it *runs*. ⇒ `rule.always.verify-model-ids-by-live-call`.
 
 ## .how
 
-1. **list the catalog before you add or change a model id** — do not copy an id from a
-   marketing page or a blog post:
+1. **read the catalog before you add or change a model id** — do not copy an id from a
+   vendor page or a blog post:
    ```
    GET https://api.fireworks.ai/inference/v1/models?page_size=200
    Authorization: Bearer $FIREWORKS_API_KEY
    ```
-   the api is authoritative over any catalog or docs page.
-2. **prefer the dated id** when an alias and a dated id both appear for the same model.
+   ⚠️ **this step finds CANDIDATES, and proves naught.** an id in this response may still
+   404 on inference — measured, three times, on 2026-09-16. the catalog read is necessary
+   and not sufficient; only a live completion settles serve-ability
+   (`rule.always.verify-model-ids-by-live-call`).
+2. **prefer the dated id** when an alias and a dated id both appear for the same model —
+   then probe **both** live, since the dated one can be dead too.
 3. **record the check** — note the id and the date verified in the config comment, so a
    later reader knows the pin was observed, not assumed.
 4. **keep the slug stable** — our `fireworks/<family>/<model>` slug is our contract with
@@ -66,27 +74,33 @@ GLM-5.1 was deprecated effective **2026-08-07**; the model remains on provisione
 throughput only. **no pin would have prevented that.** and the fix differs in kind — a
 deprecated model must be dropped or moved to provisioned throughput, never "re-pinned".
 
-so a pin must be paired with a **scheduled catalog check** that asserts every configured id
-is still served. cron, not per-PR: no file in our repo changes when a provider retires a
-model, so there is no diff for a PR gate to trigger on.
+so a pin must be paired with a **live liveness check** that asserts every configured id is
+still served. no file in our repo changes when a provider retires a model, so there is no
+diff for a PR gate to trigger on. the check is mechanized as
+`BrainAtom.config.integration.test.ts`.
 
 ## .diagnosis aid
 
 | symptom | likely cause | fix |
 |---|---|---|
-| id 404s, a dated sibling serves | alias rot | pin to the dated id |
-| id 404s, no sibling in catalog | deprecated/withdrawn | drop it, or move to provisioned throughput |
+| id 404s, a dated peer serves | alias rot | pin to the dated id |
+| id 404s, no peer serves | deprecated/withdrawn | drop it, or move to provisioned throughput |
 | id serves but output shifted | weight drift under an alias | pin to the dated id |
+
+🟡 note the middle row's test is **"no peer serves"**, never "no peer in the catalog" — a
+peer can sit in the catalog and 404 all the same.
 
 ## .enforcement
 
 - a model id that uses a floating alias where a dated id is served = **blocker**
-- a model id added without a catalog check = **blocker**
-- a configured id absent from the provider catalog = **blocker**
+- a model id added without a catalog read AND a live call = **blocker**
+- a configured id that 404s on inference = **blocker**
 - a deprecated model "fixed" by a re-pin rather than removal = **blocker**
 
 ## .see also
 
+- `rule.always.verify-model-ids-by-live-call` — the serve-ability half; corrects this rule's
+  catalog-read step
 - `define.brain-config-pattern` — where model ids are declared
 - `rule.require.pinned-versions` (mechanic) — the same argument for package deps
 - `rule.require.errors-name-the-fix` (ergonomist) — a retired id should surface as a named
