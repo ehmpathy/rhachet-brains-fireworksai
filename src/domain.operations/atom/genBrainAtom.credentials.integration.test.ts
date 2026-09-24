@@ -20,7 +20,7 @@ const realApiKey = process.env.FIREWORKS_API_KEY;
 describe('genBrainAtom.credentials.integration', () => {
   // .note = matches genBrainAtom.integration.test.ts. cases 2 and 4 each make
   //         2 sequential real calls; observed CI latency for a single
-  //         fireworks/deepseek/v4-flash call ranges 1-28s, so 60s left no
+  //         fireworks/deepseek/flash/v4 call ranges 1-28s, so 60s left no
   //         headroom for two in sequence (measured: 58.4s pass, 60.0s fail).
   jest.setTimeout(90000);
 
@@ -40,7 +40,7 @@ describe('genBrainAtom.credentials.integration', () => {
           },
         });
 
-        const atom = genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' });
+        const atom = genBrainAtom({ slug: 'fireworks/deepseek/flash/v4' });
         const result = await atom.ask(
           {
             role: {},
@@ -71,7 +71,7 @@ describe('genBrainAtom.credentials.integration', () => {
           },
         });
 
-        const atom = genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' });
+        const atom = genBrainAtom({ slug: 'fireworks/deepseek/flash/v4' });
 
         // first ask
         await atom.ask(
@@ -113,7 +113,7 @@ describe('genBrainAtom.credentials.integration', () => {
           },
         });
 
-        const atom = genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' });
+        const atom = genBrainAtom({ slug: 'fireworks/deepseek/flash/v4' });
         const error = await getError(
           atom.ask(
             {
@@ -157,7 +157,7 @@ describe('genBrainAtom.credentials.integration', () => {
           },
         });
 
-        const atom = genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' });
+        const atom = genBrainAtom({ slug: 'fireworks/deepseek/flash/v4' });
 
         // call with context A
         await atom.ask(
@@ -194,7 +194,7 @@ describe('genBrainAtom.credentials.integration', () => {
           creds: { keyrack: { owner: 'ehmpath', env: 'test' } },
         });
 
-        const atom = genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' });
+        const atom = genBrainAtom({ slug: 'fireworks/deepseek/flash/v4' });
         const result = await atom.ask(
           {
             role: {},

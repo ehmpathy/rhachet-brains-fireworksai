@@ -15,7 +15,7 @@ export type BrainAtomConfig = {
  * .what = credential keys required by fireworks ai
  * .why = enables type-safe credential lookup via rhachet's BrainSuppliesCreds
  */
-export type FireworksCreds = { FIREWORKS_API_KEY: string };
+export type CredsFireworks = { FIREWORKS_API_KEY: string };
 
 /**
  * .what = supplies for fireworks brain supplier
@@ -26,17 +26,33 @@ export type FireworksCreds = { FIREWORKS_API_KEY: string };
  *   - explicit getter: () => Promise<{ FIREWORKS_API_KEY: string }>
  */
 export type BrainSuppliesFireworks = {
-  creds: BrainSuppliesCreds<FireworksCreds>;
+  creds: BrainSuppliesCreds<CredsFireworks>;
 };
 
 /**
- * .what = supported fireworks ai atom slugs
- * .why = enables type-safe slug specification with model variants
+ * .what = version-pinned fireworks ai atom slugs — the CANONICAL names
+ * .why = enables a caller to pin an exact model version, so a provider's
+ *        version churn cannot move the weights under them
+ *
+ * .shape = `fireworks/{family}/{tier}/{version}`
+ *
+ *         the tier is its own segment, so a pin and its generic are peers that
+ *         differ by one word:
+ *
+ *           fireworks/deepseek/flash/v4.1     <- this exact version
+ *           fireworks/deepseek/flash/latest   <- whichever version is current
+ *
+ *         it also lets tier tell two models apart where a suffix used to:
+ *         `glm/pro/5.3` and `glm/flash/5.3` are one release in two tiers.
+ *
+ * .note = this union is the CANONICAL set, never the ACCEPTED set. a caller may
+ *         also name a versionless or a pre-tier slug, and `slug/AtomSlug.ts`
+ *         is the root that maps all three forms — read it first.
  *
  * .note = every slug below was verified by a LIVE chat completion on
- *         2026-09-16. a catalog read is not evidence of serve-ability — three
+ *         2026-09-22. a catalog read is not evidence of serve-ability — three
  *         ids that the catalog returned as available answered 404 on
- *         inference the same day. only a real call proves a model serves.
+ *         inference on 2026-09-16. only a real call proves a model serves.
  *
  * .note = slugs dropped on 2026-09-16, each for a live 404:
  *         - `fireworks/qwen/3.7-plus`   — `qwen3p7-plus` 404s; catalog lists it
@@ -47,26 +63,32 @@ export type BrainSuppliesFireworks = {
  *         deprecated effective 2026-08-07, so its id 404s on serverless. it
  *         remains on provisioned throughput only, which this package does not
  *         target. a deprecation is never fixable by a re-pin.
+ *
+ * .note = five of these carry a retirement (`RETIREMENT_BY_ATOM_SLUG`). they
+ *         stay in this union and keep their config, because a live probe on
+ *         2026-09-22 found that every one of them still serves. a retirement is
+ *         an ANNOUNCEMENT, and to drop a slug on the announcement would break a
+ *         caller whose model still answers.
  */
-export type FireworksBrainAtomSlug =
+export type BrainAtomSlugFireworksPinned =
   // deepseek
-  | 'fireworks/deepseek/v4-pro'
-  | 'fireworks/deepseek/v4.1-flash'
-  | 'fireworks/deepseek/v4-flash'
+  | 'fireworks/deepseek/pro/v4'
+  | 'fireworks/deepseek/flash/v4.1'
+  | 'fireworks/deepseek/flash/v4'
   // moonshot/kimi
-  | 'fireworks/kimi/k3'
-  | 'fireworks/kimi/k2.7-code'
-  | 'fireworks/kimi/k2.6'
+  | 'fireworks/kimi/pro/k3'
+  | 'fireworks/kimi/code/k2.7'
+  | 'fireworks/kimi/pro/k2.6'
   // z.ai/glm
-  | 'fireworks/glm/5.3'
-  | 'fireworks/glm/5.3-flash'
-  | 'fireworks/glm/5.2'
+  | 'fireworks/glm/pro/5.3'
+  | 'fireworks/glm/flash/5.3'
+  | 'fireworks/glm/pro/5.2'
   // minimax
-  | 'fireworks/minimax/m3'
+  | 'fireworks/minimax/flash/m3'
   // fireworks/gpt-oss
-  | 'fireworks/gpt-oss/120b'
+  | 'fireworks/gpt-oss/flash/120b'
   // nvidia/nemotron
-  | 'fireworks/nemotron/3.5-lightning';
+  | 'fireworks/nemotron/flash/3.5';
 
 /**
  * .what = model configuration by slug
@@ -107,7 +129,7 @@ export type FireworksBrainAtomSlug =
  *   - benchmarks: https://benchlm.ai/benchmarks/sweVerified
  */
 export const CONFIG_BY_ATOM_SLUG: Record<
-  FireworksBrainAtomSlug,
+  BrainAtomSlugFireworksPinned,
   BrainAtomConfig
 > = {
   // ═══════════════════════════════════════════════════════════════════════════
@@ -130,7 +152,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - mmlu-pro: 87.5%
    *   - gpqa-diamond: 90.1%
    */
-  'fireworks/deepseek/v4-pro': {
+  'fireworks/deepseek/pro/v4': {
     model: 'accounts/fireworks/models/deepseek-v4-pro-0813',
     description: 'deepseek-v4-pro - frontier (1M, swe 80.6%)',
     spec: new BrainSpec({
@@ -171,7 +193,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - context: 1_048_576 (models api)
    *   - deployed: 2026-09-09 (models api)
    */
-  'fireworks/deepseek/v4.1-flash': {
+  'fireworks/deepseek/flash/v4.1': {
     model: 'accounts/fireworks/models/deepseek-v4p1-flash',
     description: 'deepseek-v4.1-flash - cheapfast vision (1M)',
     spec: new BrainSpec({
@@ -217,7 +239,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - swe-bench verified: 79.0%
    *   - gpqa-diamond: ~88%
    */
-  'fireworks/deepseek/v4-flash': {
+  'fireworks/deepseek/flash/v4': {
     model: 'accounts/fireworks/models/deepseek-v4-flash-0731',
     description: 'deepseek-v4-flash - cheapfast (1M, swe 79.0%)',
     spec: new BrainSpec({
@@ -262,7 +284,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - context: 1_048_576 (models api)
    *   - deployed: 2026-07-19 (models api)
    */
-  'fireworks/kimi/k3': {
+  'fireworks/kimi/pro/k3': {
     model: 'accounts/fireworks/models/kimi-k3',
     description: 'kimi-k3 - frontier vision (1M)',
     spec: new BrainSpec({
@@ -298,7 +320,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - context: 262_144 (models api)
    *   - deployed: 2026-07-30 (models api)
    */
-  'fireworks/kimi/k2.7-code': {
+  'fireworks/kimi/code/k2.7': {
     model: 'accounts/fireworks/models/kimi-k2p7-code',
     description: 'kimi-k2.7-code - agentic code (256K)',
     spec: new BrainSpec({
@@ -339,7 +361,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - deployed: 2026-06-18 (models api)
    *   - swe-bench verified: 80.2%
    */
-  'fireworks/kimi/k2.6': {
+  'fireworks/kimi/pro/k2.6': {
     model: 'accounts/fireworks/models/kimi-k2p6',
     description: 'kimi-k2.6 - frontier (256K, swe 80.2%)',
     spec: new BrainSpec({
@@ -384,7 +406,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - context: 1_048_576 (models api)
    *   - deployed: 2026-08-27 (models api)
    */
-  'fireworks/glm/5.3': {
+  'fireworks/glm/pro/5.3': {
     model: 'accounts/fireworks/models/glm-5p3',
     description: 'glm-5.3 - frontier code (1M)',
     spec: new BrainSpec({
@@ -423,7 +445,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - context: 1_048_576 (models api)
    *   - deployed: 2026-08-25 (models api)
    */
-  'fireworks/glm/5.3-flash': {
+  'fireworks/glm/flash/5.3': {
     model: 'accounts/fireworks/models/glm-5p3-flash',
     description: 'glm-5.3-flash - cheapfast vision (1M)',
     spec: new BrainSpec({
@@ -463,7 +485,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - gpqa-diamond: 92.9%
    *   - terminal-bench 2.1: 81.0
    */
-  'fireworks/glm/5.2': {
+  'fireworks/glm/pro/5.2': {
     model: 'accounts/fireworks/models/glm-5p2',
     description: 'glm-5.2 - frontier code (1M, swe 77.8%, gpqa 92.9%)',
     spec: new BrainSpec({
@@ -505,7 +527,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - deployed: 2026-07-02 (models api)
    *   - swe-bench verified: 80.5%
    */
-  'fireworks/minimax/m3': {
+  'fireworks/minimax/flash/m3': {
     model: 'accounts/fireworks/models/minimax-m3',
     description: 'minimax-m3 - cheapfast multimodal (500K, swe 80.5%)',
     spec: new BrainSpec({
@@ -545,7 +567,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - context: 131_072 (models api)
    *   - deployed: 2026-05-05 (models api)
    */
-  'fireworks/gpt-oss/120b': {
+  'fireworks/gpt-oss/flash/120b': {
     model: 'accounts/fireworks/models/gpt-oss-120b',
     description: 'gpt-oss-120b - cheapfast (128K)',
     spec: new BrainSpec({
@@ -590,7 +612,7 @@ export const CONFIG_BY_ATOM_SLUG: Record<
    *   - context: 262_144 (models api)
    *   - deployed: 2026-08-07 (models api)
    */
-  'fireworks/nemotron/3.5-lightning': {
+  'fireworks/nemotron/flash/3.5': {
     model: 'accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b',
     description: 'nemotron-3.5-lightning - cheapest (256K)',
     spec: new BrainSpec({

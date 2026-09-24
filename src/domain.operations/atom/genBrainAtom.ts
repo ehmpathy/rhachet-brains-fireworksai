@@ -26,15 +26,15 @@ import { castIntoFireworksToolMessages } from '../../infra/cast/castIntoFirework
 import {
   type BrainSuppliesFireworks,
   CONFIG_BY_ATOM_SLUG,
-  type FireworksBrainAtomSlug,
 } from './BrainAtom.config';
 import { getOnePromptCacheAffinityKey } from './getOnePromptCacheAffinityKey';
+import type { BrainAtomSlugFireworks } from './slug/AtomSlug';
+import { asPinnedAtomSlug } from './slug/asPinnedAtomSlug';
+import { getOneRetirementError } from './slug/getOneRetirementError';
 
 // re-export for consumers
-export type {
-  BrainSuppliesFireworks,
-  FireworksBrainAtomSlug,
-} from './BrainAtom.config';
+export type { BrainSuppliesFireworks } from './BrainAtom.config';
+export type { BrainAtomSlugFireworks } from './slug/AtomSlug';
 
 /**
  * .what = typed context for fireworks brain supplier
@@ -51,16 +51,23 @@ export type ContextBrainSupplierFireworks = ContextBrainSupplier<
  *
  * .note = fireworks ai api is openai-compatible with baseURL override
  *
+ * .note = the slug a caller names is RESOLVED before lookup, so a retired slug
+ *         and a versionless generic both reach a live model with no edit on
+ *         the caller's side (`asPinnedAtomSlug`).
+ *
  * .example
- *   genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' }) // fast + cheap
- *   genBrainAtom({ slug: 'fireworks/minimax/2.7' }) // best swe-bench (80.5%)
- *   genBrainAtom({ slug: 'fireworks/kimi/k2.6' }) // high capability
+ *   genBrainAtom({ slug: 'fireworks/deepseek/flash/latest' }) // versionless, never churns
+ *   genBrainAtom({ slug: 'fireworks/deepseek/flash/v4.1' })   // pinned, byte-stable
+ *   genBrainAtom({ slug: 'fireworks/deepseek/flash/v4' })     // retired -> routed to v4.1-flash
  */
 export const genBrainAtom = (input: {
-  slug: FireworksBrainAtomSlug;
+  slug: BrainAtomSlugFireworks;
 }): BrainAtom<ContextBrainSupplierFireworks> => {
+  // resolve the named slug onto the pinned slug that serves it
+  const slug = asPinnedAtomSlug({ slug: input.slug });
+
   // guard for invalid slug (runtime protection for js callers)
-  const config = CONFIG_BY_ATOM_SLUG[input.slug];
+  const config = CONFIG_BY_ATOM_SLUG[slug];
   const validSlugs = Object.keys(CONFIG_BY_ATOM_SLUG);
   if (!config)
     throw new BadRequestError(
@@ -70,7 +77,9 @@ export const genBrainAtom = (input: {
 
   return new BrainAtom({
     repo: 'fireworks',
-    slug: input.slug,
+    // .note = the RESOLVED slug, never the named one. the brain is the model it
+    //         actually reaches, so a metric or log that said otherwise would lie.
+    slug,
     description: config.description,
     spec: config.spec,
 
@@ -200,30 +209,42 @@ export const genBrainAtom = (input: {
         systemPrompt,
       });
 
-      const response = await openai.chat.completions.create(
-        {
-          model: config.model,
-          messages,
-          ...(hasTools ? { tools, tool_choice: 'auto' as const } : {}),
-          ...(wantStructuredOutput
-            ? {
-                response_format: {
-                  type: 'json_schema',
-                  json_schema: {
-                    name: 'response',
-                    strict: true,
-                    schema: jsonSchema,
-                  },
-                },
-              }
-            : {}),
-        },
-        {
-          headers: affinityKey
-            ? { 'x-session-affinity': affinityKey }
-            : undefined,
-        },
-      );
+      // .note = the catch NEVER swallows (`rule.forbid.failhide`). it recognizes
+      //         exactly one case — a model withdrawn under an ambiguous
+      //         retirement — and upgrades fireworks' opaque `404 Model not
+      //         found` into an error that names the successors to choose from.
+      //         every other error rethrows untouched.
+      const response = await (async () => {
+        try {
+          return await openai.chat.completions.create(
+            {
+              model: config.model,
+              messages,
+              ...(hasTools ? { tools, tool_choice: 'auto' as const } : {}),
+              ...(wantStructuredOutput
+                ? {
+                    response_format: {
+                      type: 'json_schema',
+                      json_schema: {
+                        name: 'response',
+                        strict: true,
+                        schema: jsonSchema,
+                      },
+                    },
+                  }
+                : {}),
+            },
+            {
+              headers: affinityKey
+                ? { 'x-session-affinity': affinityKey }
+                : undefined,
+            },
+          );
+        } catch (error) {
+          if (!(error instanceof Error)) throw error;
+          throw getOneRetirementError({ slug, error }) ?? error;
+        }
+      })();
 
       // extract response message
       const message = response.choices[0]?.message;

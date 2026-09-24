@@ -10,11 +10,9 @@ import { getError, given, then, useThen, when } from 'test-fns';
 import { z } from 'zod';
 
 import { TEST_ASSETS_DIR } from '../../.test/assets/dir';
-import type {
-  BrainSuppliesFireworks,
-  FireworksBrainAtomSlug,
-} from './BrainAtom.config';
+import type { BrainSuppliesFireworks } from './BrainAtom.config';
 import { genBrainAtom } from './genBrainAtom';
+import type { BrainAtomSlugFireworks } from './slug/AtomSlug';
 
 const BRIEFS_DIR = path.join(TEST_ASSETS_DIR, '/example.briefs');
 
@@ -34,19 +32,25 @@ describe('genBrainAtom.integration', () => {
   jest.setTimeout(90000);
 
   // use deepseek-v4-flash for fast integration tests
-  const brainAtom = genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' });
+  const brainAtom = genBrainAtom({ slug: 'fireworks/deepseek/flash/v4' });
 
   // use minimax/m3 for tool use tests (reliable tool call + slug support)
-  const brainAtomWithTools = genBrainAtom({ slug: 'fireworks/minimax/m3' });
+  const brainAtomWithTools = genBrainAtom({
+    slug: 'fireworks/minimax/flash/m3',
+  });
 
-  given('[case1] genBrainAtom({ slug: "fireworks/deepseek/v4-flash" })', () => {
+  given('[case1] genBrainAtom({ slug: "fireworks/deepseek/flash/v4" })', () => {
     when('[t0] atom is created', () => {
       then('repo is "fireworks"', () => {
         expect(brainAtom.repo).toEqual('fireworks');
       });
 
-      then('slug is "fireworks/deepseek/v4-flash"', () => {
-        expect(brainAtom.slug).toEqual('fireworks/deepseek/v4-flash');
+      // 🔴 .why = v4 carries a ROUTED retirement, so the atom reports the model
+      //           it ACTUALLY reaches, never the name it was asked by. a brain
+      //           that claimed the retired slug would put a lie into every
+      //           metric and log line downstream.
+      then('slug is the successor it routed onto', () => {
+        expect(brainAtom.slug).toEqual('fireworks/deepseek/flash/v4.1');
       });
 
       then('description is defined', () => {
@@ -175,19 +179,19 @@ describe('genBrainAtom.integration', () => {
 
   given('[case4] all models leverage briefs', () => {
     // every slug in the catalog; each verified by a live call 2026-09-16
-    const allSlugs: FireworksBrainAtomSlug[] = [
-      'fireworks/deepseek/v4-pro',
-      'fireworks/deepseek/v4.1-flash',
-      'fireworks/deepseek/v4-flash',
-      'fireworks/kimi/k3',
-      'fireworks/kimi/k2.7-code',
-      'fireworks/kimi/k2.6',
-      'fireworks/glm/5.3',
-      'fireworks/glm/5.3-flash',
-      'fireworks/glm/5.2',
-      'fireworks/minimax/m3',
-      'fireworks/gpt-oss/120b',
-      'fireworks/nemotron/3.5-lightning',
+    const allSlugs: BrainAtomSlugFireworks[] = [
+      'fireworks/deepseek/pro/v4',
+      'fireworks/deepseek/flash/v4.1',
+      'fireworks/deepseek/flash/v4',
+      'fireworks/kimi/pro/k3',
+      'fireworks/kimi/code/k2.7',
+      'fireworks/kimi/pro/k2.6',
+      'fireworks/glm/pro/5.3',
+      'fireworks/glm/flash/5.3',
+      'fireworks/glm/pro/5.2',
+      'fireworks/minimax/flash/m3',
+      'fireworks/gpt-oss/flash/120b',
+      'fireworks/nemotron/flash/3.5',
     ];
 
     const briefs = [
@@ -448,19 +452,19 @@ describe('genBrainAtom.integration', () => {
 
   given('[case9] tool use model compatibility', () => {
     // every model in the catalog declares tooluse; each is exercised here
-    const toolCompatSlugs: FireworksBrainAtomSlug[] = [
-      'fireworks/deepseek/v4-pro',
-      'fireworks/deepseek/v4.1-flash',
-      'fireworks/deepseek/v4-flash',
-      'fireworks/kimi/k3',
-      'fireworks/kimi/k2.7-code',
-      'fireworks/kimi/k2.6',
-      'fireworks/glm/5.3',
-      'fireworks/glm/5.3-flash',
-      'fireworks/glm/5.2',
-      'fireworks/minimax/m3',
-      'fireworks/gpt-oss/120b',
-      'fireworks/nemotron/3.5-lightning',
+    const toolCompatSlugs: BrainAtomSlugFireworks[] = [
+      'fireworks/deepseek/pro/v4',
+      'fireworks/deepseek/flash/v4.1',
+      'fireworks/deepseek/flash/v4',
+      'fireworks/kimi/pro/k3',
+      'fireworks/kimi/code/k2.7',
+      'fireworks/kimi/pro/k2.6',
+      'fireworks/glm/pro/5.3',
+      'fireworks/glm/flash/5.3',
+      'fireworks/glm/pro/5.2',
+      'fireworks/minimax/flash/m3',
+      'fireworks/gpt-oss/flash/120b',
+      'fireworks/nemotron/flash/3.5',
     ];
 
     for (const slug of toolCompatSlugs) {
@@ -528,9 +532,9 @@ describe('genBrainAtom.integration', () => {
     };
 
     // test tool use on models that support it
-    const modelsToTest: FireworksBrainAtomSlug[] = [
-      'fireworks/minimax/m3',
-      'fireworks/glm/5.3-flash',
+    const modelsToTest: BrainAtomSlugFireworks[] = [
+      'fireworks/minimax/flash/m3',
+      'fireworks/glm/flash/5.3',
     ];
 
     for (const slug of modelsToTest) {
