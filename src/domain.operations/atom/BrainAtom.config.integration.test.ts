@@ -3,8 +3,8 @@ import OpenAI from 'openai';
 import { given, then, useThen, when } from 'test-fns';
 
 import {
+  type BrainAtomSlugFireworksPinned,
   CONFIG_BY_ATOM_SLUG,
-  type FireworksBrainAtomSlug,
 } from './BrainAtom.config';
 
 if (!process.env.FIREWORKS_API_KEY)
@@ -21,7 +21,9 @@ const openai = new OpenAI({
   baseURL: 'https://api.fireworks.ai/inference/v1',
 });
 
-const ALL_SLUGS = Object.keys(CONFIG_BY_ATOM_SLUG) as FireworksBrainAtomSlug[];
+const ALL_SLUGS = Object.keys(
+  CONFIG_BY_ATOM_SLUG,
+) as BrainAtomSlugFireworksPinned[];
 
 /**
  * .what = asks one model the cheapest question that still proves it serves
@@ -64,7 +66,7 @@ describe('BrainAtom.config.catalog.integration', () => {
     //         sidesteps that entirely.
     const probed = useThen('each is probed with a live call', async () => {
       const results: {
-        slug: FireworksBrainAtomSlug;
+        slug: BrainAtomSlugFireworksPinned;
         model: string;
         served: boolean;
         cause: string | null;

@@ -23,7 +23,7 @@ if (!process.env.FIREWORKS_API_KEY)
     },
   );
 
-const SLUG = 'fireworks/deepseek/v4-flash' as const;
+const SLUG = 'fireworks/deepseek/flash/v4' as const;
 const MODEL = CONFIG_BY_ATOM_SLUG[SLUG].model;
 
 /**
@@ -85,7 +85,7 @@ const asArmHitRate = (input: {
 
 describe('genBrainAtom.promptCache.integration', () => {
   // .note = 2 arms x 6 sequential real calls. observed single-call latency for
-  //         fireworks/deepseek/v4-flash ranges 1-28s, so 12 in sequence needs
+  //         fireworks/deepseek/flash/v4 ranges 1-28s, so 12 in sequence needs
   //         real headroom.
   jest.setTimeout(600000);
 

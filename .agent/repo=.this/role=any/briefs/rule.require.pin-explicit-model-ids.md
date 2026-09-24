@@ -101,6 +101,10 @@ peer can sit in the catalog and 404 all the same.
 
 - `rule.always.verify-model-ids-by-live-call` — the serve-ability half; corrects this rule's
   catalog-read step
+- `rule.require.versionless-slug-per-tier` — 🟡 the necessary PEER. this rule makes our
+  **internal** model id explicit; that one keeps our **public** slug versionless, so a pin
+  we must re-aim costs a consumer no edit. a package that pins internally and exports the
+  version outward has merely moved the churn downstream.
 - `define.brain-config-pattern` — where model ids are declared
 - `rule.require.pinned-versions` (mechanic) — the same argument for package deps
 - `rule.require.errors-name-the-fix` (ergonomist) — a retired id should surface as a named
