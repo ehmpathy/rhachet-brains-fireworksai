@@ -3,6 +3,8 @@ import { given, then, when } from 'test-fns';
 import { CONFIG_BY_ATOM_SLUG } from '../BrainAtom.config';
 import {
   type BrainAtomSlugFireworksLatest,
+  type BrainAtomSlugFireworksLatestBare,
+  LATEST_BY_BARE_SLUG,
   PINNED_BY_LATEST_SLUG,
 } from './AtomSlug.latest';
 import {
@@ -98,6 +100,36 @@ describe('asPinnedAtomSlug', () => {
           isRetiredAtomSlug(asPinnedAtomSlug({ slug })),
         );
         expect(doomed).toEqual([]);
+      });
+    });
+  });
+
+  given('[case3b] a bare versionless slug', () => {
+    when('[t0] the bare deepseek flash slug is resolved', () => {
+      then('it lands where its /latest twin lands', () => {
+        expect(asPinnedAtomSlug({ slug: 'fireworks/deepseek/flash' })).toEqual(
+          asPinnedAtomSlug({ slug: 'fireworks/deepseek/flash/latest' }),
+        );
+      });
+    });
+
+    when('[t1] every bare slug is read', () => {
+      const bares = Object.keys(
+        LATEST_BY_BARE_SLUG,
+      ) as BrainAtomSlugFireworksLatestBare[];
+
+      then('each names exactly `${bare}/latest`', () => {
+        // .why = a bare slug is shorthand, never a second generic. a row that
+        //        pointed anywhere else would be a generic that disagrees with
+        //        its own longhand.
+        for (const bare of bares) {
+          expect(LATEST_BY_BARE_SLUG[bare]).toEqual(`${bare}/latest`);
+        }
+      });
+
+      then('there is one bare slug per /latest slug', () => {
+        expect(bares.length).toEqual(Object.keys(PINNED_BY_LATEST_SLUG).length);
+        expect(bares.length).toBeGreaterThan(0);
       });
     });
   });

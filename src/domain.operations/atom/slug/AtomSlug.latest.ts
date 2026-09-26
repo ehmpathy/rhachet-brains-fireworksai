@@ -95,3 +95,59 @@ export const PINNED_BY_LATEST_SLUG: Record<
 export const isLatestAtomSlug = (
   slug: string,
 ): slug is BrainAtomSlugFireworksLatest => slug in PINNED_BY_LATEST_SLUG;
+
+/**
+ * .what = drops the `/latest` segment from a versionless slug
+ * .why = derives the bare union FROM the latest union, so the two cannot drift
+ */
+type AsLatestBareSlug<TSlug> = TSlug extends `${infer TBare}/latest`
+  ? TBare
+  : never;
+
+/**
+ * .what = bare versionless slugs — `fireworks/{family}/{tier}`
+ * .why = the shortest name a caller can hold: family and tier, the two axes
+ *        they chose on, and no version at all. it means exactly what
+ *        `fireworks/{family}/{tier}/latest` means.
+ *
+ * .note = one bare slug per `/latest` slug, by construction. a tier with no
+ *         generic (kimi/code, kimi/flash) has no bare slug either.
+ */
+export type BrainAtomSlugFireworksLatestBare =
+  AsLatestBareSlug<BrainAtomSlugFireworksLatest>;
+
+/**
+ * .what = the `/latest` slug each bare slug means
+ * .why = a bare slug is an alias of an alias; it resolves through the latest
+ *        registry, so a re-aim there re-aims both names at once
+ *
+ * .note = `Record` forces one row per bare slug, and
+ *         `asPinnedAtomSlug.test.ts` asserts each row is `${bare}/latest`.
+ */
+export const LATEST_BY_BARE_SLUG: Record<
+  BrainAtomSlugFireworksLatestBare,
+  BrainAtomSlugFireworksLatest
+> = {
+  // deepseek
+  'fireworks/deepseek/pro': 'fireworks/deepseek/pro/latest',
+  'fireworks/deepseek/flash': 'fireworks/deepseek/flash/latest',
+  // moonshot/kimi
+  'fireworks/kimi/pro': 'fireworks/kimi/pro/latest',
+  // z.ai/glm
+  'fireworks/glm/pro': 'fireworks/glm/pro/latest',
+  'fireworks/glm/flash': 'fireworks/glm/flash/latest',
+  // minimax
+  'fireworks/minimax/flash': 'fireworks/minimax/flash/latest',
+  // fireworks/gpt-oss
+  'fireworks/gpt-oss/flash': 'fireworks/gpt-oss/flash/latest',
+  // nvidia/nemotron
+  'fireworks/nemotron/flash': 'fireworks/nemotron/flash/latest',
+};
+
+/**
+ * .what = tells a bare versionless slug from every other form
+ * .why = a type guard narrows without an as-cast (`rule.forbid.as-cast`)
+ */
+export const isLatestBareAtomSlug = (
+  slug: string,
+): slug is BrainAtomSlugFireworksLatestBare => slug in LATEST_BY_BARE_SLUG;

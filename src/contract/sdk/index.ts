@@ -16,28 +16,47 @@ import { genBrainAtom } from '../../domain.operations/atom/genBrainAtom';
  *         absent for that reason. both still WORK for a caller who names them
  *         — they route silently — they simply do not earn a second entry.
  *
- * .note = versionless slugs (`fireworks/{family}/{tier}/latest`) are likewise
- *         absent. each resolves onto a pinned slug already listed, so they
- *         would duplicate rather than add. they remain fully callable via
- *         `genBrainAtom`, which is the recommended way to name a model.
+ * 🔴 .note = every VERSIONLESS name is listed too, as its own atom under its
+ *         own name — `fireworks/{family}/{tier}` and `…/{tier}/latest`. a
+ *         consumer selects a brain from this list by `atom.slug`, so a name
+ *         absent here cannot be chosen, however well `genBrainAtom` accepts it.
+ *         the versionless names are the ones we recommend, so they must be the
+ *         ones a consumer can pick (`rule.require.versionless-slugs-selectable`).
+ *         `getBrainAtomsByFireworksAI.unit.test.ts` clamps the list to them.
  */
 export const getBrainAtomsByFireworksAI = (): BrainAtom[] => {
   return [
     // deepseek
+    genBrainAtom({ slug: 'fireworks/deepseek/pro' }),
+    genBrainAtom({ slug: 'fireworks/deepseek/pro/latest' }),
     genBrainAtom({ slug: 'fireworks/deepseek/pro/v4' }),
+    genBrainAtom({ slug: 'fireworks/deepseek/flash' }),
+    genBrainAtom({ slug: 'fireworks/deepseek/flash/latest' }),
     genBrainAtom({ slug: 'fireworks/deepseek/flash/v4.1' }),
     // moonshot/kimi
+    genBrainAtom({ slug: 'fireworks/kimi/pro' }),
+    genBrainAtom({ slug: 'fireworks/kimi/pro/latest' }),
     genBrainAtom({ slug: 'fireworks/kimi/pro/k3' }),
-    genBrainAtom({ slug: 'fireworks/kimi/code/k2.7' }),
     genBrainAtom({ slug: 'fireworks/kimi/pro/k2.6' }),
+    genBrainAtom({ slug: 'fireworks/kimi/code/k2.7' }),
     // z.ai/glm
+    genBrainAtom({ slug: 'fireworks/glm/pro' }),
+    genBrainAtom({ slug: 'fireworks/glm/pro/latest' }),
     genBrainAtom({ slug: 'fireworks/glm/pro/5.3' }),
+    genBrainAtom({ slug: 'fireworks/glm/flash' }),
+    genBrainAtom({ slug: 'fireworks/glm/flash/latest' }),
     genBrainAtom({ slug: 'fireworks/glm/flash/5.3' }),
     // minimax
+    genBrainAtom({ slug: 'fireworks/minimax/flash' }),
+    genBrainAtom({ slug: 'fireworks/minimax/flash/latest' }),
     genBrainAtom({ slug: 'fireworks/minimax/flash/m3' }),
     // gpt-oss
+    genBrainAtom({ slug: 'fireworks/gpt-oss/flash' }),
+    genBrainAtom({ slug: 'fireworks/gpt-oss/flash/latest' }),
     genBrainAtom({ slug: 'fireworks/gpt-oss/flash/120b' }),
     // nvidia/nemotron
+    genBrainAtom({ slug: 'fireworks/nemotron/flash' }),
+    genBrainAtom({ slug: 'fireworks/nemotron/flash/latest' }),
     genBrainAtom({ slug: 'fireworks/nemotron/flash/3.5' }),
   ];
 };
@@ -58,9 +77,15 @@ export type {
 export { genBrainAtom } from '../../domain.operations/atom/genBrainAtom';
 // the slug vocabulary, so a consumer can name any accepted form
 export type { BrainAtomSlugFireworks } from '../../domain.operations/atom/slug/AtomSlug';
-export type { BrainAtomSlugFireworksLatest } from '../../domain.operations/atom/slug/AtomSlug.latest';
-// the versionless registry, so a consumer can read what each generic names today
-export { PINNED_BY_LATEST_SLUG } from '../../domain.operations/atom/slug/AtomSlug.latest';
+export type {
+  BrainAtomSlugFireworksLatest,
+  BrainAtomSlugFireworksLatestBare,
+} from '../../domain.operations/atom/slug/AtomSlug.latest';
+// the versionless registries, so a consumer can read what each generic names today
+export {
+  LATEST_BY_BARE_SLUG,
+  PINNED_BY_LATEST_SLUG,
+} from '../../domain.operations/atom/slug/AtomSlug.latest';
 export type { BrainAtomSlugFireworksLegacy } from '../../domain.operations/atom/slug/AtomSlug.legacy';
 // the legacy registry, so a consumer can find the canonical name of an old slug
 export { PINNED_BY_LEGACY_SLUG } from '../../domain.operations/atom/slug/AtomSlug.legacy';

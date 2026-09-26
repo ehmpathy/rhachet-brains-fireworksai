@@ -19,6 +19,11 @@ typo the type union then rejects for no legible reason.
 
 the versionless slug **adds**; it never replaces a pin.
 
+🔴 **and it must be SELECTABLE.** each generic is exported as its own atom in
+`getBrainAtomsByFireworksAI()`, under its own name, and so is its bare shorthand
+`fireworks/{family}/{tier}`. a generic the type union accepts but the registry omits cannot be
+chosen by any consumer ⇒ `rule.require.versionless-slugs-selectable`.
+
 ## .why — a version in a public slug exports the provider's clock to our consumers
 
 a slug is a contract. put a version number in it and every consumer has signed up for a

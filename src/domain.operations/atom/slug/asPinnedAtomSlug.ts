@@ -2,7 +2,12 @@ import { UnexpectedCodePathError } from 'helpful-errors';
 
 import type { BrainAtomSlugFireworksPinned } from '../BrainAtom.config';
 import type { BrainAtomSlugFireworks } from './AtomSlug';
-import { isLatestAtomSlug, PINNED_BY_LATEST_SLUG } from './AtomSlug.latest';
+import {
+  isLatestAtomSlug,
+  isLatestBareAtomSlug,
+  LATEST_BY_BARE_SLUG,
+  PINNED_BY_LATEST_SLUG,
+} from './AtomSlug.latest';
 import { isLegacyAtomSlug, PINNED_BY_LEGACY_SLUG } from './AtomSlug.legacy';
 import { isRetiredAtomSlug, RETIREMENT_BY_ATOM_SLUG } from './AtomSlug.retired';
 
@@ -18,6 +23,8 @@ const asCanonicalAtomSlug = (input: {
 }): BrainAtomSlugFireworksPinned => {
   if (isLegacyAtomSlug(input.slug)) return PINNED_BY_LEGACY_SLUG[input.slug];
   if (isLatestAtomSlug(input.slug)) return PINNED_BY_LATEST_SLUG[input.slug];
+  if (isLatestBareAtomSlug(input.slug))
+    return PINNED_BY_LATEST_SLUG[LATEST_BY_BARE_SLUG[input.slug]];
   return input.slug;
 };
 
