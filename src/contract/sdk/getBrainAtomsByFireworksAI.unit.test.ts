@@ -9,16 +9,18 @@ import {
   LATEST_BY_BARE_SLUG,
   PINNED_BY_LATEST_SLUG,
 } from '../../domain.operations/atom/slug/AtomSlug.latest';
+import { isRetiredAtomSlug } from '../../domain.operations/atom/slug/AtomSlug.retired';
 import { asPinnedAtomSlug } from '../../domain.operations/atom/slug/asPinnedAtomSlug';
 import { getBrainAtomsByFireworksAI } from './index';
 
 /**
- * .what = every pinned slug that serves under its OWN name
- * .why = a ROUTED retirement resolves onto its successor, so it is owed no atom
+ * .what = every pinned slug with no retirement on record
+ * .why = a ROUTED retirement resolves onto its successor, and an AMBIGUOUS one
+ *        is withdrawn and can only 404 — so neither is owed an atom
  */
 const getAllPinnedSlugsStandalone = (): BrainAtomSlugFireworksPinned[] =>
   (Object.keys(CONFIG_BY_ATOM_SLUG) as BrainAtomSlugFireworksPinned[]).filter(
-    (slug) => asPinnedAtomSlug({ slug }) === slug,
+    (slug) => !isRetiredAtomSlug(slug),
   );
 
 /**
@@ -94,6 +96,13 @@ describe('getBrainAtomsByFireworksAI', () => {
           }
         },
       );
+
+      then('no listed atom is a retired pin', () => {
+        // .why = a retired pin either routes elsewhere or is withdrawn; an atom
+        //        for it is a brain a consumer can choose and never use
+        const retired = slugs.filter((slug) => isRetiredAtomSlug(slug));
+        expect(retired).toEqual([]);
+      });
 
       then('the bare deepseek flash name is listed', () => {
         // .why = the literal name from the report, stated plainly so the clamp

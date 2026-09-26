@@ -16,6 +16,11 @@ import { genBrainAtom } from '../../domain.operations/atom/genBrainAtom';
  *         absent for that reason. both still WORK for a caller who names them
  *         — they route silently — they simply do not earn a second entry.
  *
+ * .note = an AMBIGUOUS retirement is absent too — `deepseek/pro/v4`,
+ *         `kimi/pro/k2.6`, `kimi/code/k2.7`. fireworks withdrew all three
+ *         (measured 2026-09-26), so an atom for one could only 404. a caller who
+ *         names one still gets the named error that lists its successors.
+ *
  * 🔴 .note = every VERSIONLESS name is listed too, as its own atom under its
  *         own name — `fireworks/{family}/{tier}` and `…/{tier}/latest`. a
  *         consumer selects a brain from this list by `atom.slug`, so a name
@@ -29,7 +34,6 @@ export const getBrainAtomsByFireworksAI = (): BrainAtom[] => {
     // deepseek
     genBrainAtom({ slug: 'fireworks/deepseek/pro' }),
     genBrainAtom({ slug: 'fireworks/deepseek/pro/latest' }),
-    genBrainAtom({ slug: 'fireworks/deepseek/pro/v4' }),
     genBrainAtom({ slug: 'fireworks/deepseek/flash' }),
     genBrainAtom({ slug: 'fireworks/deepseek/flash/latest' }),
     genBrainAtom({ slug: 'fireworks/deepseek/flash/v4.1' }),
@@ -37,8 +41,6 @@ export const getBrainAtomsByFireworksAI = (): BrainAtom[] => {
     genBrainAtom({ slug: 'fireworks/kimi/pro' }),
     genBrainAtom({ slug: 'fireworks/kimi/pro/latest' }),
     genBrainAtom({ slug: 'fireworks/kimi/pro/k3' }),
-    genBrainAtom({ slug: 'fireworks/kimi/pro/k2.6' }),
-    genBrainAtom({ slug: 'fireworks/kimi/code/k2.7' }),
     // z.ai/glm
     genBrainAtom({ slug: 'fireworks/glm/pro' }),
     genBrainAtom({ slug: 'fireworks/glm/pro/latest' }),

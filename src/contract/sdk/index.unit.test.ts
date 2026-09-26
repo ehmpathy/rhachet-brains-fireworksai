@@ -10,6 +10,7 @@ import {
   LATEST_BY_BARE_SLUG,
   PINNED_BY_LATEST_SLUG,
 } from '../../domain.operations/atom/slug/AtomSlug.latest';
+import { isRetiredAtomSlug } from '../../domain.operations/atom/slug/AtomSlug.retired';
 import { asPinnedAtomSlug } from '../../domain.operations/atom/slug/asPinnedAtomSlug';
 import { getBrainAtomsByFireworksAI } from './index';
 
@@ -21,9 +22,9 @@ describe('rhachet-brains-fireworksai.unit', () => {
       //        `toHaveLength(10)` under a name that read "11 atoms", so the two
       //        had already disagreed.
       //
-      // .note = the set owed is every configured slug that resolves to
-      //         ITSELF (a routed retirement resolves onto its successor), plus
-      //         every versionless name, each under its own name.
+      // .note = the set owed is every configured slug with no retirement on
+      //         record (a routed one resolves elsewhere; an ambiguous one is
+      //         withdrawn), plus every versionless name, each under its own name.
       then(
         'exports the configured slugs that stand alone, plus every versionless name',
         () => {
@@ -32,7 +33,7 @@ describe('rhachet-brains-fireworksai.unit', () => {
           const owed = [
             ...(
               Object.keys(CONFIG_BY_ATOM_SLUG) as BrainAtomSlugFireworksPinned[]
-            ).filter((slug) => asPinnedAtomSlug({ slug }) === slug),
+            ).filter((slug) => !isRetiredAtomSlug(slug)),
             ...Object.keys(PINNED_BY_LATEST_SLUG),
             ...Object.keys(LATEST_BY_BARE_SLUG),
           ];

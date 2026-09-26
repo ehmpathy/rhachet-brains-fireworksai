@@ -178,14 +178,14 @@ describe('genBrainAtom.integration', () => {
   });
 
   given('[case4] all models leverage briefs', () => {
-    // every slug in the catalog; each verified by a live call 2026-09-16
+    // every slug that reaches a live model. the AMBIGUOUS retirements
+    // (deepseek/pro/v4, kimi/pro/k2.6, kimi/code/k2.7) were withdrawn by
+    // fireworks 2026-09-26 and now raise a named error by design, so they are
+    // absent. the ROUTED ones stay, since they prove the route still serves.
     const allSlugs: BrainAtomSlugFireworks[] = [
-      'fireworks/deepseek/pro/v4',
       'fireworks/deepseek/flash/v4.1',
       'fireworks/deepseek/flash/v4',
       'fireworks/kimi/pro/k3',
-      'fireworks/kimi/code/k2.7',
-      'fireworks/kimi/pro/k2.6',
       'fireworks/glm/pro/5.3',
       'fireworks/glm/flash/5.3',
       'fireworks/glm/pro/5.2',
@@ -451,14 +451,12 @@ describe('genBrainAtom.integration', () => {
   // this is a Fireworks AI limitation; xAI handles this differently
 
   given('[case9] tool use model compatibility', () => {
-    // every model in the catalog declares tooluse; each is exercised here
+    // every model that still serves declares tooluse; each is exercised here.
+    // the withdrawn AMBIGUOUS retirements are absent (see [case4]).
     const toolCompatSlugs: BrainAtomSlugFireworks[] = [
-      'fireworks/deepseek/pro/v4',
       'fireworks/deepseek/flash/v4.1',
       'fireworks/deepseek/flash/v4',
       'fireworks/kimi/pro/k3',
-      'fireworks/kimi/code/k2.7',
-      'fireworks/kimi/pro/k2.6',
       'fireworks/glm/pro/5.3',
       'fireworks/glm/flash/5.3',
       'fireworks/glm/pro/5.2',

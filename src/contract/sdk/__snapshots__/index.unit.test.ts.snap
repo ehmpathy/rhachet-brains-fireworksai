@@ -4,15 +4,12 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
 [
   "fireworks/deepseek/pro",
   "fireworks/deepseek/pro/latest",
-  "fireworks/deepseek/pro/v4",
   "fireworks/deepseek/flash",
   "fireworks/deepseek/flash/latest",
   "fireworks/deepseek/flash/v4.1",
   "fireworks/kimi/pro",
   "fireworks/kimi/pro/latest",
   "fireworks/kimi/pro/k3",
-  "fireworks/kimi/pro/k2.6",
-  "fireworks/kimi/code/k2.7",
   "fireworks/glm/pro",
   "fireworks/glm/pro/latest",
   "fireworks/glm/pro/5.3",
@@ -111,50 +108,6 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
         "skills": {
           "tooluse": true,
           "vision": true,
-        },
-      },
-    },
-  },
-  {
-    "slug": "fireworks/deepseek/pro/v4",
-    "spec": BrainSpec {
-      "cost": {
-        "cash": {
-          "cache": {
-            "get": "USD 0.000_000_044",
-            "set": "USD 0.00",
-          },
-          "input": "USD 0.000_001_320",
-          "output": "USD 0.000_003_960",
-          "per": "token",
-        },
-        "time": {
-          "latency": {
-            "seconds": 1.2,
-          },
-          "speed": {
-            "per": {
-              "seconds": 1,
-            },
-            "tokens": 80,
-          },
-        },
-      },
-      "gain": {
-        "cutoff": "2026-08-13",
-        "domain": "ALL",
-        "grades": {
-          "gpqa": 90.1,
-          "mmlu": 87.5,
-          "swe": 80.6,
-        },
-        "size": {
-          "context": {
-            "tokens": 1048576,
-          },
-        },
-        "skills": {
-          "tooluse": true,
         },
       },
     },
@@ -396,90 +349,6 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
         "size": {
           "context": {
             "tokens": 1048576,
-          },
-        },
-        "skills": {
-          "tooluse": true,
-          "vision": true,
-        },
-      },
-    },
-  },
-  {
-    "slug": "fireworks/kimi/pro/k2.6",
-    "spec": BrainSpec {
-      "cost": {
-        "cash": {
-          "cache": {
-            "get": "USD 0.000_000_160",
-            "set": "USD 0.00",
-          },
-          "input": "USD 0.000_000_950",
-          "output": "USD 0.000_004_000",
-          "per": "token",
-        },
-        "time": {
-          "latency": {
-            "seconds": 1,
-          },
-          "speed": {
-            "per": {
-              "seconds": 1,
-            },
-            "tokens": 90,
-          },
-        },
-      },
-      "gain": {
-        "cutoff": "2026-06-18",
-        "domain": "ALL",
-        "grades": {
-          "swe": 80.2,
-        },
-        "size": {
-          "context": {
-            "tokens": 262144,
-          },
-        },
-        "skills": {
-          "tooluse": true,
-          "vision": true,
-        },
-      },
-    },
-  },
-  {
-    "slug": "fireworks/kimi/code/k2.7",
-    "spec": BrainSpec {
-      "cost": {
-        "cash": {
-          "cache": {
-            "get": "USD 0.000_000_190",
-            "set": "USD 0.00",
-          },
-          "input": "USD 0.000_000_950",
-          "output": "USD 0.000_004_000",
-          "per": "token",
-        },
-        "time": {
-          "latency": {
-            "seconds": 1,
-          },
-          "speed": {
-            "per": {
-              "seconds": 1,
-            },
-            "tokens": 90,
-          },
-        },
-      },
-      "gain": {
-        "cutoff": "2026-07-30",
-        "domain": "SOFTWARE",
-        "grades": {},
-        "size": {
-          "context": {
-            "tokens": 262144,
           },
         },
         "skills": {

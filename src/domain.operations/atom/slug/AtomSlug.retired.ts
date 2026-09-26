@@ -5,10 +5,12 @@ import type { BrainAtomSlugFireworksPinned } from '../BrainAtom.config';
  * .why = names exactly which models are on the way out, so the registry below
  *        is a TOTAL record rather than a partial one full of undefined
  *
- * .note = every slug here still SERVES. verified by a live chat completion on
- *         2026-09-22, the same probe that guards the whole catalog. a
- *         retirement is an announcement, never a tombstone — the id answers
- *         until fireworks actually withdraws it.
+ * .note = a retirement is an announcement, never a tombstone — the id answers
+ *         until fireworks actually withdraws it. live probe 2026-09-26:
+ *         `glm/pro/5.2` still serves; `deepseek/flash/v4`, `deepseek/pro/v4`,
+ *         `kimi/pro/k2.6`, and `kimi/code/k2.7` are WITHDRAWN (404). the routed
+ *         one still reaches its successor; the three ambiguous ones raise the
+ *         named error, and none is listed in `getBrainAtomsByFireworksAI`.
  */
 export type BrainAtomSlugFireworksRetired =
   | 'fireworks/deepseek/flash/v4'

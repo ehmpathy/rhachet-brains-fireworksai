@@ -6,6 +6,7 @@ import {
   type BrainAtomSlugFireworksPinned,
   CONFIG_BY_ATOM_SLUG,
 } from './BrainAtom.config';
+import { isRetiredAtomSlug } from './slug/AtomSlug.retired';
 
 if (!process.env.FIREWORKS_API_KEY)
   throw new BadRequestError(
@@ -90,14 +91,20 @@ describe('BrainAtom.config.catalog.integration', () => {
 
       return {
         count: results.length,
+        // .note = a RETIRED id may 404 by design: fireworks withdraws it on
+        //         its own clock, and the caller then gets a named error that
+        //         lists successors (`getOneRetirementError`). only an id with NO
+        //         retirement on record is rot. measured 2026-09-26: four retired
+        //         ids withdrawn, each already covered by its retirement row.
         dead: results
           .filter((result) => !result.served)
+          .filter((result) => !isRetiredAtomSlug(result.slug))
           .map((result) => `${result.slug} (${result.model}): ${result.cause}`),
       };
     });
 
     when('[t0] the probe returns', () => {
-      then('every configured id serves', () => {
+      then('every id with no retirement on record serves', () => {
         expect(probed.dead).toEqual([]);
       });
 

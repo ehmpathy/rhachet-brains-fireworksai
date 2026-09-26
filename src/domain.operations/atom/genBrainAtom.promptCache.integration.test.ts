@@ -23,7 +23,10 @@ if (!process.env.FIREWORKS_API_KEY)
     },
   );
 
-const SLUG = 'fireworks/deepseek/flash/v4' as const;
+// .note = a LIVE pin, never a retired one. the control arm calls the raw model
+//         id, which skips the retirement route — so a withdrawn id 404s here
+//         (measured 2026-09-26: `deepseek-v4-flash-0731` withdrawn).
+const SLUG = 'fireworks/deepseek/flash/v4.1' as const;
 const MODEL = CONFIG_BY_ATOM_SLUG[SLUG].model;
 
 /**
