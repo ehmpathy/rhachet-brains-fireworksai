@@ -30,6 +30,7 @@ import {
 import { getOnePromptCacheAffinityKey } from './getOnePromptCacheAffinityKey';
 import type { BrainAtomSlugFireworks } from './slug/AtomSlug';
 import { asPinnedAtomSlug } from './slug/asPinnedAtomSlug';
+import { asPublishedAtomSlug } from './slug/asPublishedAtomSlug';
 import { getOneRetirementError } from './slug/getOneRetirementError';
 
 // re-export for consumers
@@ -56,6 +57,7 @@ export type ContextBrainSupplierFireworks = ContextBrainSupplier<
  *         the caller's side (`asPinnedAtomSlug`).
  *
  * .example
+ *   genBrainAtom({ slug: 'fireworks/deepseek/flash' })        // bare versionless, never churns
  *   genBrainAtom({ slug: 'fireworks/deepseek/flash/latest' }) // versionless, never churns
  *   genBrainAtom({ slug: 'fireworks/deepseek/flash/v4.1' })   // pinned, byte-stable
  *   genBrainAtom({ slug: 'fireworks/deepseek/flash/v4' })     // retired -> routed to v4.1-flash
@@ -75,12 +77,19 @@ export const genBrainAtom = (input: {
       { slug: input.slug, valid: validSlugs },
     );
 
+  // publish a versionless name as named, so a registry can select it by that name
+  const slugPublished = asPublishedAtomSlug({ slug: input.slug });
+
   return new BrainAtom({
     repo: 'fireworks',
-    // .note = the RESOLVED slug, never the named one. the brain is the model it
-    //         actually reaches, so a metric or log that said otherwise would lie.
-    slug,
-    description: config.description,
+    // .note = a versionless name stays as named, so `choice: '.../flash/latest'`
+    //         finds its atom. a retired name becomes its successor, since an
+    //         atom that claimed a withdrawn model would lie (`asPublishedAtomSlug`).
+    slug: slugPublished,
+    description:
+      slugPublished === slug
+        ? config.description
+        : `${config.description} (${slugPublished} -> ${slug})`,
     spec: config.spec,
 
     /**

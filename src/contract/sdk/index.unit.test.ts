@@ -6,6 +6,11 @@ import {
   CONFIG_BY_ATOM_SLUG,
 } from '../../domain.operations/atom/BrainAtom.config';
 import { genBrainAtom } from '../../domain.operations/atom/genBrainAtom';
+import {
+  LATEST_BY_BARE_SLUG,
+  PINNED_BY_LATEST_SLUG,
+} from '../../domain.operations/atom/slug/AtomSlug.latest';
+import { isRetiredAtomSlug } from '../../domain.operations/atom/slug/AtomSlug.retired';
 import { asPinnedAtomSlug } from '../../domain.operations/atom/slug/asPinnedAtomSlug';
 import { getBrainAtomsByFireworksAI } from './index';
 
@@ -17,18 +22,24 @@ describe('rhachet-brains-fireworksai.unit', () => {
       //        `toHaveLength(10)` under a name that read "11 atoms", so the two
       //        had already disagreed.
       //
-      // .note = the invariant narrowed when retirement routes landed. a slug
-      //         with a ROUTED retirement resolves onto its successor, so to
-      //         list it too would emit two atoms under one slug. the set owed
-      //         is therefore every configured slug that resolves to ITSELF.
-      then('exports exactly the configured slugs that stand alone', () => {
-        const atoms = getBrainAtomsByFireworksAI();
-        const slugs = atoms.map((a: BrainAtom) => a.slug);
-        const owed = (
-          Object.keys(CONFIG_BY_ATOM_SLUG) as BrainAtomSlugFireworksPinned[]
-        ).filter((slug) => asPinnedAtomSlug({ slug }) === slug);
-        expect([...slugs].sort()).toEqual(owed.sort());
-      });
+      // .note = the set owed is every configured slug with no retirement on
+      //         record (a routed one resolves elsewhere; an ambiguous one is
+      //         withdrawn), plus every versionless name, each under its own name.
+      then(
+        'exports the configured slugs that stand alone, plus every versionless name',
+        () => {
+          const atoms = getBrainAtomsByFireworksAI();
+          const slugs = atoms.map((a: BrainAtom) => a.slug);
+          const owed = [
+            ...(
+              Object.keys(CONFIG_BY_ATOM_SLUG) as BrainAtomSlugFireworksPinned[]
+            ).filter((slug) => !isRetiredAtomSlug(slug)),
+            ...Object.keys(PINNED_BY_LATEST_SLUG),
+            ...Object.keys(LATEST_BY_BARE_SLUG),
+          ];
+          expect([...slugs].sort()).toEqual(owed.sort());
+        },
+      );
 
       then('returns BrainAtom instances', () => {
         const atoms = getBrainAtomsByFireworksAI();
@@ -166,6 +177,38 @@ describe('rhachet-brains-fireworksai.unit', () => {
         });
       },
     );
+
+    // 🔴 .why = a registry selects by `atom.slug`, so a versionless name must
+    //           survive onto the atom. an atom that renamed itself to the pin
+    //           is one no consumer can choose by the name they hold.
+    when('[t2] called with a versionless name', () => {
+      const atomLatest = genBrainAtom({
+        slug: 'fireworks/deepseek/flash/latest',
+      });
+      const atomBare = genBrainAtom({ slug: 'fireworks/deepseek/flash' });
+      const atomPinned = genBrainAtom({
+        slug: 'fireworks/deepseek/flash/v4.1',
+      });
+
+      then('the /latest atom keeps its /latest name', () => {
+        expect(atomLatest.slug).toEqual('fireworks/deepseek/flash/latest');
+      });
+
+      then('the bare atom keeps its bare name', () => {
+        expect(atomBare.slug).toEqual('fireworks/deepseek/flash');
+      });
+
+      then('both carry the spec of the pin they reach', () => {
+        expect(atomLatest.spec).toEqual(atomPinned.spec);
+        expect(atomBare.spec).toEqual(atomPinned.spec);
+      });
+
+      then('the description names the pin it reaches', () => {
+        expect(atomBare.description).toContain(
+          'fireworks/deepseek/flash -> fireworks/deepseek/flash/v4.1',
+        );
+      });
+    });
 
     when('[t1] called with invalid slug', () => {
       then('throws BadRequestError with helpful message', async () => {

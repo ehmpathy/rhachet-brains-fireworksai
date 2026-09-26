@@ -2,15 +2,28 @@
 
 exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworksAI when: [t0] called then: slugs match snapshot 1`] = `
 [
-  "fireworks/deepseek/pro/v4",
+  "fireworks/deepseek/pro",
+  "fireworks/deepseek/pro/latest",
+  "fireworks/deepseek/flash",
+  "fireworks/deepseek/flash/latest",
   "fireworks/deepseek/flash/v4.1",
+  "fireworks/kimi/pro",
+  "fireworks/kimi/pro/latest",
   "fireworks/kimi/pro/k3",
-  "fireworks/kimi/code/k2.7",
-  "fireworks/kimi/pro/k2.6",
+  "fireworks/glm/pro",
+  "fireworks/glm/pro/latest",
   "fireworks/glm/pro/5.3",
+  "fireworks/glm/flash",
+  "fireworks/glm/flash/latest",
   "fireworks/glm/flash/5.3",
+  "fireworks/minimax/flash",
+  "fireworks/minimax/flash/latest",
   "fireworks/minimax/flash/m3",
+  "fireworks/gpt-oss/flash",
+  "fireworks/gpt-oss/flash/latest",
   "fireworks/gpt-oss/flash/120b",
+  "fireworks/nemotron/flash",
+  "fireworks/nemotron/flash/latest",
   "fireworks/nemotron/flash/3.5",
 ]
 `;
@@ -18,38 +31,34 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
 exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworksAI when: [t0] called then: specs match snapshot 1`] = `
 [
   {
-    "slug": "fireworks/deepseek/pro/v4",
+    "slug": "fireworks/deepseek/pro",
     "spec": BrainSpec {
       "cost": {
         "cash": {
           "cache": {
-            "get": "USD 0.000_000_044",
+            "get": "USD 0.000_000_007",
             "set": "USD 0.00",
           },
-          "input": "USD 0.000_001_320",
-          "output": "USD 0.000_003_960",
+          "input": "USD 0.000_000_220",
+          "output": "USD 0.000_000_660",
           "per": "token",
         },
         "time": {
           "latency": {
-            "seconds": 1.2,
+            "seconds": 0.4,
           },
           "speed": {
             "per": {
               "seconds": 1,
             },
-            "tokens": 80,
+            "tokens": 150,
           },
         },
       },
       "gain": {
-        "cutoff": "2026-08-13",
+        "cutoff": "2026-09-09",
         "domain": "ALL",
-        "grades": {
-          "gpqa": 90.1,
-          "mmlu": 87.5,
-          "swe": 80.6,
-        },
+        "grades": {},
         "size": {
           "context": {
             "tokens": 1048576,
@@ -57,6 +66,130 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
         },
         "skills": {
           "tooluse": true,
+          "vision": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/deepseek/pro/latest",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_007",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_220",
+          "output": "USD 0.000_000_660",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.4,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 150,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-09-09",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 1048576,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+          "vision": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/deepseek/flash",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_007",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_220",
+          "output": "USD 0.000_000_660",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.4,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 150,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-09-09",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 1048576,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+          "vision": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/deepseek/flash/latest",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_007",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_220",
+          "output": "USD 0.000_000_660",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.4,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 150,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-09-09",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 1048576,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+          "vision": true,
         },
       },
     },
@@ -88,6 +221,88 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
       },
       "gain": {
         "cutoff": "2026-09-09",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 1048576,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+          "vision": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/kimi/pro",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_300",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_003_000",
+          "output": "USD 0.000_015_000",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 1.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 70,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-07-19",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 1048576,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+          "vision": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/kimi/pro/latest",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_300",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_003_000",
+          "output": "USD 0.000_015_000",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 1.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 70,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-07-19",
         "domain": "ALL",
         "grades": {},
         "size": {
@@ -144,16 +359,16 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
     },
   },
   {
-    "slug": "fireworks/kimi/code/k2.7",
+    "slug": "fireworks/glm/pro",
     "spec": BrainSpec {
       "cost": {
         "cash": {
           "cache": {
-            "get": "USD 0.000_000_190",
+            "get": "USD 0.000_000_260",
             "set": "USD 0.00",
           },
-          "input": "USD 0.000_000_950",
-          "output": "USD 0.000_004_000",
+          "input": "USD 0.000_001_400",
+          "output": "USD 0.000_004_400",
           "per": "token",
         },
         "time": {
@@ -164,37 +379,36 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
             "per": {
               "seconds": 1,
             },
-            "tokens": 90,
+            "tokens": 80,
           },
         },
       },
       "gain": {
-        "cutoff": "2026-07-30",
-        "domain": "SOFTWARE",
+        "cutoff": "2026-08-27",
+        "domain": "ALL",
         "grades": {},
         "size": {
           "context": {
-            "tokens": 262144,
+            "tokens": 1048576,
           },
         },
         "skills": {
           "tooluse": true,
-          "vision": true,
         },
       },
     },
   },
   {
-    "slug": "fireworks/kimi/pro/k2.6",
+    "slug": "fireworks/glm/pro/latest",
     "spec": BrainSpec {
       "cost": {
         "cash": {
           "cache": {
-            "get": "USD 0.000_000_160",
+            "get": "USD 0.000_000_260",
             "set": "USD 0.00",
           },
-          "input": "USD 0.000_000_950",
-          "output": "USD 0.000_004_000",
+          "input": "USD 0.000_001_400",
+          "output": "USD 0.000_004_400",
           "per": "token",
         },
         "time": {
@@ -205,24 +419,21 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
             "per": {
               "seconds": 1,
             },
-            "tokens": 90,
+            "tokens": 80,
           },
         },
       },
       "gain": {
-        "cutoff": "2026-06-18",
+        "cutoff": "2026-08-27",
         "domain": "ALL",
-        "grades": {
-          "swe": 80.2,
-        },
+        "grades": {},
         "size": {
           "context": {
-            "tokens": 262144,
+            "tokens": 1048576,
           },
         },
         "skills": {
           "tooluse": true,
-          "vision": true,
         },
       },
     },
@@ -268,6 +479,88 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
     },
   },
   {
+    "slug": "fireworks/glm/flash",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_030",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_150",
+          "output": "USD 0.000_000_500",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.4,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 160,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-08-25",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 1048576,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+          "vision": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/glm/flash/latest",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_030",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_150",
+          "output": "USD 0.000_000_500",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.4,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 160,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-08-25",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 1048576,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+          "vision": true,
+        },
+      },
+    },
+  },
+  {
     "slug": "fireworks/glm/flash/5.3",
     "spec": BrainSpec {
       "cost": {
@@ -304,6 +597,90 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
         "skills": {
           "tooluse": true,
           "vision": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/minimax/flash",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_060",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_300",
+          "output": "USD 0.000_001_200",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 140,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-07-02",
+        "domain": "ALL",
+        "grades": {
+          "swe": 80.5,
+        },
+        "size": {
+          "context": {
+            "tokens": 512000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/minimax/flash/latest",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_060",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_300",
+          "output": "USD 0.000_001_200",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 140,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-07-02",
+        "domain": "ALL",
+        "grades": {
+          "swe": 80.5,
+        },
+        "size": {
+          "context": {
+            "tokens": 512000,
+          },
+        },
+        "skills": {
+          "tooluse": true,
         },
       },
     },
@@ -351,6 +728,86 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
     },
   },
   {
+    "slug": "fireworks/gpt-oss/flash",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_015",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_150",
+          "output": "USD 0.000_000_600",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 120,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-05-05",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 131072,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/gpt-oss/flash/latest",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_015",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_150",
+          "output": "USD 0.000_000_600",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.5,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 120,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-05-05",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 131072,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
     "slug": "fireworks/gpt-oss/flash/120b",
     "spec": BrainSpec {
       "cost": {
@@ -382,6 +839,86 @@ exports[`rhachet-brains-fireworksai.unit given: [case1] getBrainAtomsByFireworks
         "size": {
           "context": {
             "tokens": 131072,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/nemotron/flash",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_010",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_050",
+          "output": "USD 0.000_000_200",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.3,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 220,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-08-07",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 262144,
+          },
+        },
+        "skills": {
+          "tooluse": true,
+        },
+      },
+    },
+  },
+  {
+    "slug": "fireworks/nemotron/flash/latest",
+    "spec": BrainSpec {
+      "cost": {
+        "cash": {
+          "cache": {
+            "get": "USD 0.000_000_010",
+            "set": "USD 0.00",
+          },
+          "input": "USD 0.000_000_050",
+          "output": "USD 0.000_000_200",
+          "per": "token",
+        },
+        "time": {
+          "latency": {
+            "seconds": 0.3,
+          },
+          "speed": {
+            "per": {
+              "seconds": 1,
+            },
+            "tokens": 220,
+          },
+        },
+      },
+      "gain": {
+        "cutoff": "2026-08-07",
+        "domain": "ALL",
+        "grades": {},
+        "size": {
+          "context": {
+            "tokens": 262144,
           },
         },
         "skills": {
