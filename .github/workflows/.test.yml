@@ -113,6 +113,12 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
+      # .why = lint the same tree a developer lints. without the linked .agent/
+      #        roles, ci lints a fresh checkout and stays green on a depcheck
+      #        gap that fails every local run (declapract-typescript-ehmpathy#639)
+      - name: prepare:rhachet
+        run: npm run prepare:rhachet
+
       - name: test:lint
         run: npm run test:lint
 
