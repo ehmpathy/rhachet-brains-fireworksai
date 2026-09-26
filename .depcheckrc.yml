@@ -1,3 +1,9 @@
+# .why = depcheck walks the filesystem and never reads .gitignore. rhachet keeps
+#        host-local runtime state under .agent/.actors (actor caches, claude code
+#        plugin copies); it is gitignored, never source, and its files import
+#        packages this repo does not use. upstream: declapract-typescript-ehmpathy#639
+ignorePatterns:
+  - .agent/.actors
 ignores:
   - depcheck
   - declapract
