@@ -10,7 +10,8 @@ import type { BrainAtomSlugFireworksPinned } from '../BrainAtom.config';
  *         `glm/pro/5.2` still serves; `deepseek/flash/v4`, `deepseek/pro/v4`,
  *         `kimi/pro/k2.6`, and `kimi/code/k2.7` are WITHDRAWN (404). the routed
  *         one still reaches its successor; the three ambiguous ones raise the
- *         named error, and none is listed in `getBrainAtomsByFireworksAI`.
+ *         named error. all five stay listed in `getBrainAtomsByFireworksAI`,
+ *         so a consumer's choice finds a brain either way.
  */
 export type BrainAtomSlugFireworksRetired =
   | 'fireworks/deepseek/flash/v4'

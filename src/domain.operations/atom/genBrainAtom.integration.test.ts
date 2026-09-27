@@ -45,12 +45,17 @@ describe('genBrainAtom.integration', () => {
         expect(brainAtom.repo).toEqual('fireworks');
       });
 
-      // 🔴 .why = v4 carries a ROUTED retirement, so the atom reports the model
-      //           it ACTUALLY reaches, never the name it was asked by. a brain
-      //           that claimed the retired slug would put a lie into every
-      //           metric and log line downstream.
-      then('slug is the successor it routed onto', () => {
-        expect(brainAtom.slug).toEqual('fireworks/deepseek/flash/v4.1');
+      // 🔴 .why = the atom keeps the name it was asked by, so a consumer who
+      //           holds the retired name can select it. the description names
+      //           the successor it reaches (`rule.require.redirected-slugs-selectable`).
+      then('slug is the retired name it was asked by', () => {
+        expect(brainAtom.slug).toEqual('fireworks/deepseek/flash/v4');
+      });
+
+      then('description names the successor it routes onto', () => {
+        expect(brainAtom.description).toContain(
+          'fireworks/deepseek/flash/v4 -> fireworks/deepseek/flash/v4.1',
+        );
       });
 
       then('description is defined', () => {

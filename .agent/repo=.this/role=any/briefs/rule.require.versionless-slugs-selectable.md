@@ -44,24 +44,20 @@ the full available list printed beside it, and not one versionless name in it. t
 the bare form is derived from the latest union, and `LATEST_BY_BARE_SLUG` maps each to exactly
 `${bare}/latest`. so one re-aim in `PINNED_BY_LATEST_SLUG` re-aims both names.
 
-## .the atom keeps the name it was built from — for a versionless name only
+## .the atom keeps the name it was built from — every form
 
-| the named slug | `atom.slug` | why |
-|---|---|---|
-| versionless (bare, latest) | as named | a TRUE name for the model it reaches today |
-| retired, routed | the successor | the old name no longer serves; to keep it would lie in every log |
-| pinned | itself | — |
-
-⇒ `asPublishedAtomSlug` holds this split. the description of a versionless atom names the pin it
-reaches (`fireworks/deepseek/flash -> fireworks/deepseek/flash/v4.1`), so a reader still sees the
-weights.
+`genBrainAtom` sets `atom.slug` to the name it was given — versionless, pinned, legacy, or
+retired. a renamed atom is one no consumer can select by the name they hold. the description
+names the pin it reaches (`fireworks/deepseek/flash -> fireworks/deepseek/flash/v4.1`), so a reader
+still sees the weights. ⇒ the same law for legacy and retired names:
+`rule.require.redirected-slugs-selectable`.
 
 ## .enforcement — mechanized
 
 `getBrainAtomsByFireworksAI.unit.test.ts` fails if:
 
 - any key of `PINNED_BY_LATEST_SLUG` or `LATEST_BY_BARE_SLUG` is absent from the registry
-- the registry holds aught beyond standalone pins + every versionless name
+- the registry differs from every accepted name (it is derived from the slug maps)
 - a versionless atom's spec differs from the pin it reaches
 
 `index.unit.test.ts` fails if `genBrainAtom` renames a versionless atom to its pin.
@@ -75,5 +71,6 @@ weights.
 
 - `rule.require.versionless-slug-per-tier` — WHICH generics are owed; this rule says each must be
   selectable
+- `rule.require.redirected-slugs-selectable` — the same law for legacy and retired names
 - `rule.always.verify-model-ids-by-live-call` — a new alias reaches an extant pin, so it needs no
   new probe; a re-aim still does

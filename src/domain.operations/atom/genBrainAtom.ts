@@ -30,7 +30,6 @@ import {
 import { getOnePromptCacheAffinityKey } from './getOnePromptCacheAffinityKey';
 import type { BrainAtomSlugFireworks } from './slug/AtomSlug';
 import { asPinnedAtomSlug } from './slug/asPinnedAtomSlug';
-import { asPublishedAtomSlug } from './slug/asPublishedAtomSlug';
 import { getOneRetirementError } from './slug/getOneRetirementError';
 
 // re-export for consumers
@@ -61,6 +60,10 @@ export type ContextBrainSupplierFireworks = ContextBrainSupplier<
  *   genBrainAtom({ slug: 'fireworks/deepseek/flash/latest' }) // versionless, never churns
  *   genBrainAtom({ slug: 'fireworks/deepseek/flash/v4.1' })   // pinned, byte-stable
  *   genBrainAtom({ slug: 'fireworks/deepseek/flash/v4' })     // retired -> routed to v4.1-flash
+ *   genBrainAtom({ slug: 'fireworks/deepseek/v4-flash' })     // legacy -> flash/v4 -> routed to v4.1-flash
+ *
+ * .note = every atom carries the name it was built from as `atom.slug`, so a
+ *         consumer who selects by that name finds it, and reaches the pin.
  */
 export const genBrainAtom = (input: {
   slug: BrainAtomSlugFireworks;
@@ -77,19 +80,18 @@ export const genBrainAtom = (input: {
       { slug: input.slug, valid: validSlugs },
     );
 
-  // publish a versionless name as named, so a registry can select it by that name
-  const slugPublished = asPublishedAtomSlug({ slug: input.slug });
-
   return new BrainAtom({
     repo: 'fireworks',
-    // .note = a versionless name stays as named, so `choice: '.../flash/latest'`
-    //         finds its atom. a retired name becomes its successor, since an
-    //         atom that claimed a withdrawn model would lie (`asPublishedAtomSlug`).
-    slug: slugPublished,
+    // 🔴 .note = the atom keeps the EXACT name it was built from — pinned,
+    //         versionless, legacy, or retired-and-routed alike. a registry
+    //         selects by `atom.slug`, so a renamed atom is one no consumer can
+    //         choose by the name they hold (`rule.require.redirected-slugs-selectable`).
+    //         the description names the pin it reaches, so no log hides the weights.
+    slug: input.slug,
     description:
-      slugPublished === slug
+      input.slug === slug
         ? config.description
-        : `${config.description} (${slugPublished} -> ${slug})`,
+        : `${config.description} (${input.slug} -> ${slug})`,
     spec: config.spec,
 
     /**
