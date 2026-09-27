@@ -1,36 +1,52 @@
+import { type BrainAtom, genContextBrain } from 'rhachet';
 import { given, then, when } from 'test-fns';
 
-import {
-  type BrainAtomSlugFireworksPinned,
-  CONFIG_BY_ATOM_SLUG,
-} from '../../domain.operations/atom/BrainAtom.config';
-import type { BrainAtomSlugFireworks } from '../../domain.operations/atom/slug/AtomSlug';
-import {
-  LATEST_BY_BARE_SLUG,
-  PINNED_BY_LATEST_SLUG,
-} from '../../domain.operations/atom/slug/AtomSlug.latest';
-import { isRetiredAtomSlug } from '../../domain.operations/atom/slug/AtomSlug.retired';
+import { CONFIG_BY_ATOM_SLUG } from '../../domain.operations/atom/BrainAtom.config';
 import { asPinnedAtomSlug } from '../../domain.operations/atom/slug/asPinnedAtomSlug';
+import { getAllAtomSlugs } from '../../domain.operations/atom/slug/getAllAtomSlugs';
 import { getBrainAtomsByFireworksAI } from './index';
 
 /**
- * .what = every pinned slug with no retirement on record
- * .why = a ROUTED retirement resolves onto its successor, and an AMBIGUOUS one
- *        is withdrawn and can only 404 — so neither is owed an atom
+ * .what = every name this package ever shipped outside the canonical shape
+ * .why = stated as LITERALS, never read off a map. the registry is derived from
+ *        the maps, so a map that quietly lost a row would shrink the registry
+ *        and a derived check would agree. a literal cannot agree.
+ *
+ * 🔴 .note = this list only ever GROWS. a name here was promised forever.
  */
-const getAllPinnedSlugsStandalone = (): BrainAtomSlugFireworksPinned[] =>
-  (Object.keys(CONFIG_BY_ATOM_SLUG) as BrainAtomSlugFireworksPinned[]).filter(
-    (slug) => !isRetiredAtomSlug(slug),
-  );
+const SLUGS_PROMISED_FOREVER = [
+  // legacy — published before the tier segment
+  'fireworks/deepseek/v4-pro',
+  'fireworks/deepseek/v4.1-flash',
+  'fireworks/deepseek/v4-flash',
+  'fireworks/kimi/k3',
+  'fireworks/kimi/k2.7-code',
+  'fireworks/kimi/k2.6',
+  'fireworks/glm/5.3',
+  'fireworks/glm/5.3-flash',
+  'fireworks/glm/5.2',
+  'fireworks/minimax/m3',
+  'fireworks/gpt-oss/120b',
+  'fireworks/nemotron/3.5-lightning',
+  // retired — routed to one successor, or ambiguous among several
+  'fireworks/deepseek/flash/v4',
+  'fireworks/deepseek/pro/v4',
+  'fireworks/glm/pro/5.2',
+  'fireworks/kimi/pro/k2.6',
+  'fireworks/kimi/code/k2.7',
+] as const;
 
 /**
- * .what = every versionless name — `/latest` and bare
- * .why = these are the names we recommend, so each is owed its own atom
+ * .what = the brain a consumer gets when they choose a slug by name
+ * .why = the consumer's path, verbatim: rhachet's own `genContextBrain`, whose
+ *        match is exact on `atom.slug`. pure and in-memory in explicit mode, so
+ *        this runs on every unit pass with no credentials
  */
-const getAllVersionlessSlugs = (): BrainAtomSlugFireworks[] => [
-  ...(Object.keys(PINNED_BY_LATEST_SLUG) as BrainAtomSlugFireworks[]),
-  ...(Object.keys(LATEST_BY_BARE_SLUG) as BrainAtomSlugFireworks[]),
-];
+const getOneBrainChosen = (input: { choice: string }): BrainAtom =>
+  genContextBrain({
+    brains: { atoms: getBrainAtomsByFireworksAI() },
+    choice: { atom: input.choice },
+  }).brain.choice;
 
 describe('getBrainAtomsByFireworksAI', () => {
   given('[case1] the published catalog', () => {
@@ -39,76 +55,71 @@ describe('getBrainAtomsByFireworksAI', () => {
 
     when('[t0] the listed slugs are read', () => {
       then('no slug appears twice', () => {
-        // .why = a routed retirement resolves onto its successor, so a list
-        //        that holds both would emit two atoms under one slug.
+        // .why = rhachet refuses a registry with a duplicate {repo, slug}
         expect(slugs.length).toEqual(new Set(slugs).size);
       });
 
-      then(
-        'the catalog is exactly the standalone pins plus every versionless name',
-        () => {
-          // .why = the exact set, both directions: no silent omission, no
-          //        stray entry. a pin retired onto a successor drops out; a
-          //        generic added to a registry must appear here.
-          const owed = [
-            ...getAllPinnedSlugsStandalone(),
-            ...getAllVersionlessSlugs(),
-          ];
-          expect([...slugs].sort()).toEqual([...owed].sort());
-        },
-      );
+      then('every accepted name is listed', () => {
+        expect([...slugs].sort()).toEqual([...getAllAtomSlugs()].sort());
+      });
 
-      then('the catalog is not empty', () => {
-        expect(atoms.length).toBeGreaterThan(0);
+      then('each atom carries the spec of the pin it reaches', () => {
+        // .why = an alias exports the SAME brain, never a lookalike
+        for (const slug of getAllAtomSlugs()) {
+          const atom = atoms.find((one) => one.slug === slug);
+          expect(atom?.spec).toEqual(
+            CONFIG_BY_ATOM_SLUG[asPinnedAtomSlug({ slug })].spec,
+          );
+        }
       });
     });
 
-    // 🔴 .why = the clamp for the defect that shipped in v0.2.0: every
-    //           `/latest` slug was accepted by `genBrainAtom` and ABSENT from
-    //           this list, and the atom it built carried the pinned slug. so
-    //           `choice: 'fireworks/deepseek/flash/latest'` found no atom, and
-    //           the names this package recommends could not be chosen at all.
-    //           (`rule.require.versionless-slugs-selectable`)
-    when('[t1] each versionless name is looked up by name', () => {
-      then('every versionless name is selectable as an atom slug', () => {
-        const absent = getAllVersionlessSlugs().filter(
-          (slug) => !slugs.includes(slug),
-        );
-        expect(absent).toEqual([]);
-      });
-
-      then('the versionless set is not empty', () => {
-        // .why = guards the guard — an empty set would pass the check above
-        expect(getAllVersionlessSlugs().length).toBeGreaterThan(0);
-      });
-
-      then(
-        'each versionless atom carries the spec of the pin it reaches',
-        () => {
-          // .why = an alias exports the SAME brain, never a lookalike
-          for (const slug of getAllVersionlessSlugs()) {
-            const atomAlias = atoms.find((atom) => atom.slug === slug);
-            const atomPinned = atoms.find(
-              (atom) => atom.slug === asPinnedAtomSlug({ slug }),
-            );
-            expect(atomPinned).toBeDefined();
-            expect(atomAlias?.spec).toEqual(atomPinned?.spec);
+    // 🔴 .why = the clamp for the defect that shipped through v0.2.1: every
+    //           legacy name and every retirement was accepted by `genBrainAtom`,
+    //           ABSENT from this list, and renamed to its successor on the atom.
+    //           so `choice: 'fireworks/deepseek/v4-flash'` matched no brain.
+    //           (`rule.require.redirected-slugs-selectable`)
+    when(
+      '[t1] each name promised forever is chosen via genContextBrain',
+      () => {
+        then('each is found, under the exact name chosen', () => {
+          for (const slug of SLUGS_PROMISED_FOREVER) {
+            expect(getOneBrainChosen({ choice: slug }).slug).toEqual(slug);
           }
-        },
-      );
+        });
 
-      then('no listed atom is a retired pin', () => {
-        // .why = a retired pin either routes elsewhere or is withdrawn; an atom
-        //        for it is a brain a consumer can choose and never use
-        const retired = slugs.filter((slug) => isRetiredAtomSlug(slug));
-        expect(retired).toEqual([]);
-      });
+        then('each chosen brain carries the spec of the pin it reaches', () => {
+          for (const slug of SLUGS_PROMISED_FOREVER) {
+            expect(getOneBrainChosen({ choice: slug }).spec).toEqual(
+              CONFIG_BY_ATOM_SLUG[asPinnedAtomSlug({ slug })].spec,
+            );
+          }
+        });
 
-      then('the bare deepseek flash name is listed', () => {
-        // .why = the literal name from the report, stated plainly so the clamp
-        //        keeps its teeth even if the registries themselves are emptied
-        expect(slugs).toContain('fireworks/deepseek/flash');
-        expect(slugs).toContain('fireworks/deepseek/flash/latest');
+        then('the reported name reaches v4.1-flash, and says so', () => {
+          const brain = getOneBrainChosen({
+            choice: 'fireworks/deepseek/v4-flash',
+          });
+          expect(brain.spec).toEqual(
+            CONFIG_BY_ATOM_SLUG['fireworks/deepseek/flash/v4.1'].spec,
+          );
+          expect(brain.description).toContain(
+            'fireworks/deepseek/v4-flash -> fireworks/deepseek/flash/v4.1',
+          );
+        });
+      },
+    );
+
+    // .why = the clamp for the defect that shipped in v0.2.0: every `/latest`
+    //        slug was accepted and absent. (`rule.require.versionless-slugs-selectable`)
+    when('[t2] each versionless name is chosen via genContextBrain', () => {
+      then('the bare and /latest deepseek flash names are found', () => {
+        for (const slug of [
+          'fireworks/deepseek/flash',
+          'fireworks/deepseek/flash/latest',
+        ]) {
+          expect(getOneBrainChosen({ choice: slug }).slug).toEqual(slug);
+        }
       });
     });
   });

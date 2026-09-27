@@ -1,67 +1,29 @@
 import type { BrainAtom } from 'rhachet';
 
 import { genBrainAtom } from '../../domain.operations/atom/genBrainAtom';
+import { getAllAtomSlugs } from '../../domain.operations/atom/slug/getAllAtomSlugs';
 
 /**
  * .what = returns all brain atoms provided by fireworks ai
  * .why = enables consumers to register fireworks ai atoms with genContextBrain
  *
- * .note = one atom per slug that serves under its OWN name. a slug with a
- *         ROUTED retirement is absent, because it resolves onto a successor
- *         already in this list — to include it would emit two atoms with the
- *         same slug. `getBrainAtomsByFireworksAI.unit.test.ts` holds this list
- *         to that invariant, so a future retirement cannot drift it.
+ * 🔴 .note = a consumer selects a brain from this list by `atom.slug`, exact
+ *         match. so a name absent here cannot be chosen, however well
+ *         `genBrainAtom` accepts it. ⇒ EVERY name `genBrainAtom` accepts is
+ *         listed, as its own atom, under its own name — pinned, versionless,
+ *         legacy, and retired alike (`rule.require.redirected-slugs-selectable`).
  *
- * .note = `fireworks/deepseek/flash/v4` and `fireworks/glm/pro/5.2` are the two
- *         absent for that reason. both still WORK for a caller who names them
- *         — they route silently — they simply do not earn a second entry.
+ * 🔴 .note = the list is DERIVED from the slug maps (`getAllAtomSlugs`), never
+ *         kept by hand. a hand-kept list is how every legacy name went absent
+ *         through v0.2.1: accepted by the union, forgotten by the list. derived,
+ *         a name added to any map is selectable by construction.
  *
- * .note = an AMBIGUOUS retirement is absent too — `deepseek/pro/v4`,
- *         `kimi/pro/k2.6`, `kimi/code/k2.7`. fireworks withdrew all three
- *         (measured 2026-09-26), so an atom for one could only 404. a caller who
- *         names one still gets the named error that lists its successors.
- *
- * 🔴 .note = every VERSIONLESS name is listed too, as its own atom under its
- *         own name — `fireworks/{family}/{tier}` and `…/{tier}/latest`. a
- *         consumer selects a brain from this list by `atom.slug`, so a name
- *         absent here cannot be chosen, however well `genBrainAtom` accepts it.
- *         the versionless names are the ones we recommend, so they must be the
- *         ones a consumer can pick (`rule.require.versionless-slugs-selectable`).
- *         `getBrainAtomsByFireworksAI.unit.test.ts` clamps the list to them.
+ * .note = a retirement with several replacements (AMBIGUOUS) is listed too. its
+ *         choice resolves, and its ask fails with the named error that lists
+ *         each replacement — never the bare "brain not found" of an absent one.
  */
-export const getBrainAtomsByFireworksAI = (): BrainAtom[] => {
-  return [
-    // deepseek
-    genBrainAtom({ slug: 'fireworks/deepseek/pro' }),
-    genBrainAtom({ slug: 'fireworks/deepseek/pro/latest' }),
-    genBrainAtom({ slug: 'fireworks/deepseek/flash' }),
-    genBrainAtom({ slug: 'fireworks/deepseek/flash/latest' }),
-    genBrainAtom({ slug: 'fireworks/deepseek/flash/v4.1' }),
-    // moonshot/kimi
-    genBrainAtom({ slug: 'fireworks/kimi/pro' }),
-    genBrainAtom({ slug: 'fireworks/kimi/pro/latest' }),
-    genBrainAtom({ slug: 'fireworks/kimi/pro/k3' }),
-    // z.ai/glm
-    genBrainAtom({ slug: 'fireworks/glm/pro' }),
-    genBrainAtom({ slug: 'fireworks/glm/pro/latest' }),
-    genBrainAtom({ slug: 'fireworks/glm/pro/5.3' }),
-    genBrainAtom({ slug: 'fireworks/glm/flash' }),
-    genBrainAtom({ slug: 'fireworks/glm/flash/latest' }),
-    genBrainAtom({ slug: 'fireworks/glm/flash/5.3' }),
-    // minimax
-    genBrainAtom({ slug: 'fireworks/minimax/flash' }),
-    genBrainAtom({ slug: 'fireworks/minimax/flash/latest' }),
-    genBrainAtom({ slug: 'fireworks/minimax/flash/m3' }),
-    // gpt-oss
-    genBrainAtom({ slug: 'fireworks/gpt-oss/flash' }),
-    genBrainAtom({ slug: 'fireworks/gpt-oss/flash/latest' }),
-    genBrainAtom({ slug: 'fireworks/gpt-oss/flash/120b' }),
-    // nvidia/nemotron
-    genBrainAtom({ slug: 'fireworks/nemotron/flash' }),
-    genBrainAtom({ slug: 'fireworks/nemotron/flash/latest' }),
-    genBrainAtom({ slug: 'fireworks/nemotron/flash/3.5' }),
-  ];
-};
+export const getBrainAtomsByFireworksAI = (): BrainAtom[] =>
+  getAllAtomSlugs().map((slug) => genBrainAtom({ slug }));
 
 // re-export types for consumer use
 //

@@ -1,16 +1,13 @@
 import { BrainAtom } from 'rhachet';
 import { getError, given, then, when } from 'test-fns';
 
-import {
-  type BrainAtomSlugFireworksPinned,
-  CONFIG_BY_ATOM_SLUG,
-} from '../../domain.operations/atom/BrainAtom.config';
+import { CONFIG_BY_ATOM_SLUG } from '../../domain.operations/atom/BrainAtom.config';
 import { genBrainAtom } from '../../domain.operations/atom/genBrainAtom';
 import {
   LATEST_BY_BARE_SLUG,
   PINNED_BY_LATEST_SLUG,
 } from '../../domain.operations/atom/slug/AtomSlug.latest';
-import { isRetiredAtomSlug } from '../../domain.operations/atom/slug/AtomSlug.retired';
+import { PINNED_BY_LEGACY_SLUG } from '../../domain.operations/atom/slug/AtomSlug.legacy';
 import { asPinnedAtomSlug } from '../../domain.operations/atom/slug/asPinnedAtomSlug';
 import { getBrainAtomsByFireworksAI } from './index';
 
@@ -22,24 +19,19 @@ describe('rhachet-brains-fireworksai.unit', () => {
       //        `toHaveLength(10)` under a name that read "11 atoms", so the two
       //        had already disagreed.
       //
-      // .note = the set owed is every configured slug with no retirement on
-      //         record (a routed one resolves elsewhere; an ambiguous one is
-      //         withdrawn), plus every versionless name, each under its own name.
-      then(
-        'exports the configured slugs that stand alone, plus every versionless name',
-        () => {
-          const atoms = getBrainAtomsByFireworksAI();
-          const slugs = atoms.map((a: BrainAtom) => a.slug);
-          const owed = [
-            ...(
-              Object.keys(CONFIG_BY_ATOM_SLUG) as BrainAtomSlugFireworksPinned[]
-            ).filter((slug) => !isRetiredAtomSlug(slug)),
-            ...Object.keys(PINNED_BY_LATEST_SLUG),
-            ...Object.keys(LATEST_BY_BARE_SLUG),
-          ];
-          expect([...slugs].sort()).toEqual(owed.sort());
-        },
-      );
+      // .note = the set owed is every accepted name — pinned, versionless,
+      //         legacy, retired — each under its own name.
+      then('exports every accepted name, under its own name', () => {
+        const atoms = getBrainAtomsByFireworksAI();
+        const slugs = atoms.map((a: BrainAtom) => a.slug);
+        const owed = [
+          ...Object.keys(CONFIG_BY_ATOM_SLUG),
+          ...Object.keys(PINNED_BY_LATEST_SLUG),
+          ...Object.keys(LATEST_BY_BARE_SLUG),
+          ...Object.keys(PINNED_BY_LEGACY_SLUG),
+        ];
+        expect([...slugs].sort()).toEqual(owed.sort());
+      });
 
       then('returns BrainAtom instances', () => {
         const atoms = getBrainAtomsByFireworksAI();
@@ -53,10 +45,9 @@ describe('rhachet-brains-fireworksai.unit', () => {
         }
       });
 
-      // .why = v4-flash was retired, so the catalog lists its SUCCESSOR rather
-      //        than the retired slug. the coverage moves with it: the slug a
-      //        consumer holds must still reach a listed model, which is the
-      //        whole promise of the route.
+      // .why = v4-flash was retired and routes to its successor, so the
+      //        successor must be listed too: the slug a consumer holds must
+      //        reach a listed model, which is the whole promise of the route.
       then(
         'lists the successor that fireworks/deepseek/flash/v4 routes to',
         () => {
@@ -69,14 +60,23 @@ describe('rhachet-brains-fireworksai.unit', () => {
         },
       );
 
-      // .why = a retired slug must never be listed twice under two names, and
-      //        must never vanish from reach. it is absent from the catalog and
-      //        still callable — the exact shape that costs a consumer naught.
-      then('does not list the retired slug itself', () => {
-        const atoms = getBrainAtomsByFireworksAI();
-        const slugs = atoms.map((a: BrainAtom) => a.slug);
-        expect(slugs).not.toContain('fireworks/deepseek/flash/v4');
-      });
+      // 🔴 .why = a consumer that holds the retired name selects by it. so the
+      //           retired name is listed under its OWN name, with the spec of
+      //           the successor it routes to (`rule.require.redirected-slugs-selectable`).
+      then(
+        'lists the retired slug under its own name, as its successor',
+        () => {
+          const atoms = getBrainAtomsByFireworksAI();
+          const atomRetired = atoms.find(
+            (a: BrainAtom) => a.slug === 'fireworks/deepseek/flash/v4',
+          );
+          const atomSuccessor = atoms.find(
+            (a: BrainAtom) => a.slug === 'fireworks/deepseek/flash/v4.1',
+          );
+          expect(atomRetired).toBeDefined();
+          expect(atomRetired?.spec).toEqual(atomSuccessor?.spec);
+        },
+      );
 
       then('slugs match snapshot', () => {
         const atoms = getBrainAtomsByFireworksAI();
@@ -160,11 +160,17 @@ describe('rhachet-brains-fireworksai.unit', () => {
           expect(atom).toBeInstanceOf(BrainAtom);
         });
 
-        // .why = the atom reports the model it ACTUALLY reaches, never the name
-        //        it was asked by. a brain that claimed the retired slug would
-        //        put a lie into every metric and log line downstream.
-        then('carries the successor slug it routed to', () => {
-          expect(atom.slug).toEqual('fireworks/deepseek/flash/v4.1');
+        // 🔴 .why = the atom keeps the name it was asked by, so a registry
+        //           selects it by that name. a rename to the successor made the
+        //           retired name unselectable (the defect through v0.2.1).
+        then('keeps the retired name it was asked by', () => {
+          expect(atom.slug).toEqual('fireworks/deepseek/flash/v4');
+        });
+
+        then('the description names the successor it reaches', () => {
+          expect(atom.description).toContain(
+            'fireworks/deepseek/flash/v4 -> fireworks/deepseek/flash/v4.1',
+          );
         });
 
         then('has correct repo', () => {
