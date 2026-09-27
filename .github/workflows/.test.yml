@@ -68,6 +68,12 @@ jobs:
           path: ./node_modules
           key: ${{ needs.install.outputs.node-modules-cache-key }}
 
+      # .why = acceptance tests import this package by name, via its self-link
+      #        (`link:.`), which resolves to dist/. build first, so tsc can see
+      #        the same types a consumer gets
+      - name: build
+        run: npm run build
+
       - name: test:types
         run: npm run test:types
 
